@@ -1,6 +1,7 @@
 import random
 import sys
 import numpy as np
+import heuristic_model
 import pygame
 
 # board constants
@@ -92,59 +93,65 @@ def game_won(board_state, bomb_count):
 
 
 def print_row(board, board_state, row_num):
-    if len(board) > 9 and row_num <= 9:
-        print(str(row_num), end="  ")
-    else:
-        print(str(row_num), end=" ")
     for c in range(len(board[0])):
-        spacer = " "
-        if c > 9:
-            spacer = "  "
         if board_state[row_num][c] == unopened:
-            print('-', end=spacer)
+            print('-', end=" ")
         elif board_state[row_num][c] == flaged:
-            print('f', end=spacer)
+            print('f', end=" ")
         elif board[row_num][c] == mine:
-            print('m', end=spacer)
+            print('m', end=" ")
         else:
             print(board_state[row_num][c], end=" ")
 
 
 # print the game board to the console
+
 def print_board(board, board_state):
-    if len(board) <= 9:
-        print(" ", end=" ")
-    else:
-        print("  ", end=" ")
-    for i in range(len(board)):
-        print(str(i), end=" ")
-    print()
     for r in range(len(board)):
         print_row(board, board_state, r)
         print()
 
+# game loop for minesweeper game mode
 
-def printed_game_loop():
+
+def printed_game_loop(mode):
     bomb_count = 10
     board_size = 15
     board = init_board(board_size, bomb_count)
     board_state = init_board_state(board_size)
     while not game_lost(board, board_state) or game_won(board_state, bomb_count):
         print_board(board, board_state)
-        read = input()
-        read_split = read.split()
-        if len(read_split) == 3 and type(read_split[0]) == str and read_split[1].isdigit() and read_split[1].isdigit():
-            opp = read_split[0]
-            r = int(read_split[1])
-            c = int(read_split[2])
-            if opp == "open":
-                board_state = open_tile(board_state, board, r, c)
-            if opp == "flag":
-                board_state = flag_tile(board_state, r, c)
+        if mode == "human":
+            read = input()
+            read_split = read.split()
+            if len(read_split) == 3 and type(read_split[0]) == str and read_split[1].isdigit() and read_split[1].isdigit():
+                opp = read_split[0]
+                r = int(read_split[1])
+                c = int(read_split[2])
+        else:
+            opp, r, c = heuristic_model.ai_heuristic_logic(board_state)
+        if opp == "open":
+            board_state = open_tile(board_state, board, r, c)
+        if opp == "flag":
+            board_state = flag_tile(board_state, r, c)
         print()
     if game_lost(board, board_state):
         print("you lost")
+        return False
     else:
         print("you won")
+        return True
 
-printed_game_loop()
+
+# output the number of wins for a given number of trials
+def trials(count):
+    win = 0
+    while count > 0:
+        if printed_game_loop("ai"):
+            win += 1
+    print("Trials: " + count)
+    print("Wins: " + win)
+    print("Sucess Rate: " + win/count)
+
+
+printed_game_loop("human")
