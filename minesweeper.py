@@ -119,7 +119,9 @@ def printed_game_loop(mode):
     board_size = 15
     board = init_board(board_size, bomb_count)
     board_state = init_board_state(board_size)
+    move_count = 0
     while not game_lost(board, board_state) or game_won(board_state, bomb_count):
+        print("Move " + str(move_count))
         print_board(board, board_state)
         if mode == "human":
             read = input()

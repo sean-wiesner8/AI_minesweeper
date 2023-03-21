@@ -3,6 +3,10 @@
 known_mines = {}
 opened = {}
 
+
+def row_reducer():
+    pass
+
 # given a board_state output an opp: open or flag, an a coordinate to do such operation
 
 
