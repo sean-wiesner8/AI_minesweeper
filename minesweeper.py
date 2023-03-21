@@ -137,6 +137,7 @@ def printed_game_loop(mode):
         if opp == "flag":
             board_state = flag_tile(board_state, r, c)
         print()
+        move_count += 1
     if game_lost(board, board_state):
         print("you lost")
         return False
