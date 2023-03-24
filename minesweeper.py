@@ -154,7 +154,6 @@ def printed_game_loop(mode):
                 if r < 0 or c < 0 or r >= board_size or c >= board_size:
                     print("Out of bounds")
                     continue
-
         else:
             opp, r, c = heuristic_model.ai_heuristic_logic(board_state)
         if opp == "open":
