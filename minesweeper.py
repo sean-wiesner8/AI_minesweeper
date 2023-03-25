@@ -1,8 +1,6 @@
 import random
-import sys
 import numpy as np
 import heuristic_model
-import pygame
 
 # board constants
 mine = 1
