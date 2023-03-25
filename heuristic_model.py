@@ -19,7 +19,7 @@ def ai_heuristic_logic(board_state):
         return move
 
     tile_count = len(board_state)**2
-    board_rep = np.zeroes(tile_count, tile_count)
+    board_rep = np.zeroes(tile_count, tile_count+1)
     col_size = len(board_state)
     row_size = len(board_state[0])
     for col in range(col_size):
@@ -31,4 +31,5 @@ def ai_heuristic_logic(board_state):
                             board_rep[row+row_size *
                                       col][(row+r)+(row_size)*(col+c)] = 1
 
+    board_rep[:][tile_count] = np.sum(board_rep, axis=1)
     board_rep.rref()
