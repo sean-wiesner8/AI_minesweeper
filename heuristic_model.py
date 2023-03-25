@@ -1,5 +1,6 @@
 import sympy
 import numpy as np
+import random
 
 # store operations
 queue = []
@@ -33,3 +34,14 @@ def ai_heuristic_logic(board_state):
 
     board_rep[:][tile_count] = np.sum(board_rep, axis=1)
     board_rep.rref()
+
+    # fill queue
+
+    # output first move, update queue
+    if len(queue) != 0:
+        move = queue[0]
+        queue = queue[1:]
+        return move
+    # make a random move
+    else:
+        return ("open", random.randint(0, len(board_state[0])), random.randint(0, len(board_state)))
