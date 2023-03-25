@@ -15,6 +15,7 @@ coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
                (0, 1), (1, -1), (1, 0), (1, 1)}
 
 # initalize minesweeper with a [size] x [size] board and mine count [mine]
+# does not allow a bomb to be initated at (r,c)
 
 
 def init_board(size, mine, r, c):
@@ -28,7 +29,6 @@ def init_board(size, mine, r, c):
 
 
 # initalize minesweeper with a [size] x [size] board where all tiles are unopened
-
 
 def init_board_state(size):
     board_state = np.full((size, size), -1)
@@ -126,7 +126,7 @@ def print_board(board, board_state):
 
 
 def printed_game_loop(mode):
-    bomb_count = 2
+    bomb_count = 10
     board_size = 15
     board = np.zeros((board_size, board_size))
     board_state = init_board_state(board_size)
@@ -184,4 +184,9 @@ def trials(count):
     print("Sucess Rate: " + win / count)
 
 
-printed_game_loop("human")
+def main():
+    printed_game_loop("human")
+
+
+if __name__ == "__main__":
+    main()
