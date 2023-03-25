@@ -44,11 +44,8 @@ def ai_heuristic_logic(board_state):
     if queue:
         return queue.popleft()
 
-    r, c = random.randint(0, len(board_state[0])), random.randint(
-        0, len(board_state))
-    # make a random move
-    while (board_state[r][c] != unopened):
-        r, c = random.randint(0, len(board_state[0])), random.randint(
-            0, len(board_state))
+    # if no queue chose a random unopened tile
+    unopened = np.argwhere(board_state == -1)
+    r, c = np.random.choice(unopened)
 
     return ("open", r, c)

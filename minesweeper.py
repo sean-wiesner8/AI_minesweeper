@@ -17,9 +17,12 @@ coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
 # initalize minesweeper with a [size] x [size] board and mine count [mine]
 
 
-def init_board(size, mine):
+def init_board(size, mine, r, c):
     board = np.zeros((size, size))
-    bombs = random.sample(range(np.square(size)), mine)
+    first_move = r*size + c
+    left = list(range(0, first_move))
+    right = list(range(first_move+1, np.square(size)))
+    bombs = random.sample(left + right, mine)
     board[np.unravel_index(bombs, board.shape)] = 1
     return board
 
@@ -35,9 +38,10 @@ def init_board_state(size):
 # open a tile if not flagged. If bomb, mark lost condition.
 
 
-def open_tile(board_state, board, row, col):
+def open_tile(board_state, board, row, col, open_tiles):
     if board_state[row][col] != flaged:
         board_state[row][col] = count_surrounding_bombs(board, row, col)
+        open_tiles += 1
         if board_state[row][col] == 0:
             for r, c in coordinates:
                 if (
@@ -47,9 +51,9 @@ def open_tile(board_state, board, row, col):
                     and col + c < len(board[0])
                 ):
                     if board_state[row + r][col + c] == unopened:
-                        board_state = open_tile(
-                            board_state, board, row + r, col + c)
-    return board_state
+                        board_state, open_tiles = open_tile(
+                            board_state, board, row + r, col + c, open_tiles)
+    return board_state, open_tiles
 
 
 # flag a single tile if it is unflagged and unopened. If flagged unflag
@@ -83,23 +87,14 @@ def count_surrounding_bombs(board, row, col):
 # check to see if game has been lost - udate to 0(1)
 
 
-def game_lost(board, board_state):
-    for i in range(len(board)):
-        for j in range(len(board[0])):
-            if board[i][j] == mine and board_state[i][j] >= 0:
-                return True
-    return False
+def game_lost(board, board_state, row, col):
+    return board[row][col] == mine and board_state[row][col] >= 0
 
 
 # check to see if game has been won - udate to 0(1)
 
 
-def game_won(board_state, bomb_count):
-    open_tiles = 0
-    for i in range(len(board_state)):
-        for j in range(len(board_state[0])):
-            if board_state[i][j] < 0:
-                open_tiles += 1
+def game_won(board_state, bomb_count, open_tiles):
     return open_tiles == len(board_state) * len(board_state[0]) - bomb_count
 
 
@@ -131,12 +126,15 @@ def print_board(board, board_state):
 
 
 def printed_game_loop(mode):
-    bomb_count = 10
+    bomb_count = 2
     board_size = 15
-    board = init_board(board_size, bomb_count)
+    board = np.zeros((board_size, board_size))
     board_state = init_board_state(board_size)
     move_count = 0
-    while not game_lost(board, board_state) or game_won(board_state, bomb_count):
+    open_tiles = 0
+    lost = False
+    first_move = True
+    while not game_won(board_state, bomb_count, open_tiles) and not lost:
         print("Move " + str(move_count))
         print_board(board, board_state)
         if mode == "human":
@@ -157,12 +155,16 @@ def printed_game_loop(mode):
         else:
             opp, r, c = heuristic_model.ai_heuristic_logic(board_state)
         if opp == "open":
-            board_state = open_tile(board_state, board, r, c)
+            if first_move:
+                board = init_board(board_size, bomb_count, r, c)
+            board_state, open_tiles = open_tile(
+                board_state, board, r, c, open_tiles)
+            lost = game_lost(board, board_state, r, c)
         if opp == "flag":
             board_state = flag_tile(board_state, r, c)
         print()
         move_count += 1
-    if game_lost(board, board_state):
+    if lost:
         print("you lost")
         return False
     else:
