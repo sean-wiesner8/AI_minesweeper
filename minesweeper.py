@@ -80,7 +80,7 @@ def count_surrounding_bombs(board, row, col):
     return count
 
 
-# check to see if game has been lost
+# check to see if game has been lost - udate to 0(1)
 
 
 def game_lost(board, board_state):
@@ -91,7 +91,7 @@ def game_lost(board, board_state):
     return False
 
 
-# check to see if game has been won
+# check to see if game has been won - udate to 0(1)
 
 
 def game_won(board_state, bomb_count):
@@ -176,6 +176,7 @@ def trials(count):
     while count > 0:
         if printed_game_loop("ai"):
             win += 1
+        count -= 1
     print("Trials: " + count)
     print("Wins: " + win)
     print("Sucess Rate: " + win / count)

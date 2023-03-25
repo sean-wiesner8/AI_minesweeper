@@ -1,9 +1,14 @@
 import sympy
 import numpy as np
 import random
+from collections import deque
 
 # store operations
-queue = []
+queue = deque()
+
+# board state constants
+unopened = -1
+flaged = -2
 
 # the change in tile for each of the 8 surrounding tiles
 
@@ -14,34 +19,36 @@ coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
 
 
 def ai_heuristic_logic(board_state):
-    if len(queue) != 0:
-        move = queue[0]
-        queue = queue[1:]
-        return move
+    if queue:
+        return queue.popleft()
 
     tile_count = len(board_state)**2
     board_rep = np.zeroes(tile_count, tile_count+1)
     col_size = len(board_state)
     row_size = len(board_state[0])
-    for col in range(col_size):
-        for row in range(row_size):
-            if (board_state[r][c] > 0):
-                for r, c in coordinates:
-                    if row+r >= 0 and col+c >= 0 and row+r < col_size and row_size:
-                        if (board_state[r+row][c+col] == -1):
-                            board_rep[row+row_size *
-                                      col][(row+r)+(row_size)*(col+c)] = 1
+    for r, row in enumerate(board_state):
+        for c, tile_state in enumerate(row):
+            if tile_state > unopened+1:
+                board_rep[c + r * col_size][tile_count] = tile_state
+                for i, j in coordinates:
+                    if r + i >= 0 and j+c >= 0 and j+c < col_size and r+i < row_size:
+                        if (board_state[r+i][c+j] == unopened):
+                            board_rep[c + r *
+                                      col_size][(c+j) + (r+i) * col_size] = 1
 
-    board_rep[:][tile_count] = np.sum(board_rep, axis=1)
     board_rep.rref()
 
     # fill queue
 
     # output first move, update queue
-    if len(queue) != 0:
-        move = queue[0]
-        queue = queue[1:]
-        return move
+    if queue:
+        return queue.popleft()
+
+    r, c = random.randint(0, len(board_state[0])), random.randint(
+        0, len(board_state))
     # make a random move
-    else:
-        return ("open", random.randint(0, len(board_state[0])), random.randint(0, len(board_state)))
+    while (board_state[r][c] != unopened):
+        r, c = random.randint(0, len(board_state[0])), random.randint(
+            0, len(board_state))
+
+    return ("open", r, c)
