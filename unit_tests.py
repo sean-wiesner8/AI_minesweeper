@@ -1,10 +1,18 @@
 import heuristic_model
 import minesweeper
 import numpy as np
+import unittest
 
 
-def test_init_board():
-    pass
+class TestInitBoard(unittest.TestCase):
+
+    def test_init_board_10(self):
+        init_board = minesweeper.init_board(10, 3, 4, 4)
+        unique, counts = np.unique(init_board, return_counts=True)
+        counter = dict(zip(unique, counts))
+        self.assertEqual(
+            counter[1], 3, "incorrect number of mines in initial board state")
+        self.assertEqual(init_board[4, 4], 0, "start tile should be empty")
 
 
 def test_open_tile():
@@ -30,14 +38,5 @@ def game_game_won():
 def test_ai_heuristic_logic():
     pass
 
-def main():
-  test_init_board()
-  test_open_tile()
-  test_flag_tile()
-  test_count_surrounding_bombs()
-  test_game_lost()
-  game_game_won()
-  test_ai_heuristic_logic()
 
-if __name__ == "__main__":
-    main()
+unittest.main()

@@ -55,6 +55,8 @@ def matrix_solver(matrix):
 
 
 def ai_heuristic_logic(board_state):
+
+    # If trivial move still exists, make trivial move
     if queue:
         return queue.popleft()
 

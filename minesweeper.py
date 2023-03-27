@@ -14,8 +14,8 @@ flaged = -2
 coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
                (0, 1), (1, -1), (1, 0), (1, 1)}
 
-# initalize minesweeper with a [size] x [size] board and mine count [mine]
-# does not allow a bomb to be initated at (r,c)
+"""initalize minesweeper with a [size] x [size] board and mine count [mine]. 
+does not allow a bomb to be initated at (r,c)"""
 
 
 def init_board(size, mine, r, c):
@@ -28,14 +28,15 @@ def init_board(size, mine, r, c):
     return board
 
 
-# initalize minesweeper with a [size] x [size] board where all tiles are unopened
+"""initalize minesweeper with a [size] x [size] board where all tiles are unopened"""
+
 
 def init_board_state(size):
-    board_state = np.full((size, size), -1)
+    board_state = np.full((size, size), unopened)
     return board_state
 
 
-# open a tile if not flagged. If bomb, mark lost condition.
+"""open a tile if not flagged. If bomb, mark lost condition."""
 
 
 def open_tile(board_state, board, row, col):
@@ -55,7 +56,7 @@ def open_tile(board_state, board, row, col):
     return board_state
 
 
-# flag a single tile if it is unflagged and unopened. If flagged unflag
+"""flag a single tile if it is unflagged and unopened. If flagged unflag"""
 
 
 def flag_tile(board_state, row, col):
@@ -66,7 +67,7 @@ def flag_tile(board_state, row, col):
     return board_state
 
 
-# check how many bombs are surrounding a particular tile
+"""check how many bombs are surrounding a particular tile"""
 
 
 def count_surrounding_bombs(board, row, col):
@@ -83,7 +84,7 @@ def count_surrounding_bombs(board, row, col):
     return count
 
 
-# check to see if game has been lost
+"""check to see if game has been lost"""
 
 
 def game_lost(board, board_state):
@@ -94,7 +95,7 @@ def game_lost(board, board_state):
     return False
 
 
-# check to see if game has been won
+"""check to see if game has been won"""
 
 
 def game_won(board_state, bomb_count):
@@ -106,7 +107,7 @@ def game_won(board_state, bomb_count):
     return open_tiles == len(board_state) * len(board_state[0]) - bomb_count
 
 
-# print a row of the game board to the console
+"""print a row of the game board to the console"""
 
 
 def print_row(board, board_state, row_num):
@@ -121,7 +122,7 @@ def print_row(board, board_state, row_num):
             print(board_state[row_num][c], end=" ")
 
 
-# print the game board to the console
+"""print the game board to the console"""
 
 
 def print_board(board, board_state):
@@ -130,7 +131,7 @@ def print_board(board, board_state):
         print()
 
 
-# game loop for minesweeper game mode
+"""game loop for minesweeper game mode"""
 
 
 def printed_game_loop(mode):
@@ -178,7 +179,9 @@ def printed_game_loop(mode):
         return True
 
 
-# output the number of wins for a given number of trials
+"""output the number of wins for a given number of trials"""
+
+
 def trials(count):
     win = 0
     while count > 0:
