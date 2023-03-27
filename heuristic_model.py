@@ -10,18 +10,51 @@ queue = deque()
 
 # the change in tile for each of the 8 surrounding tiles
 
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
-               (0, 1), (1, -1), (1,  0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
 
 # given a board_state output an opp: open or flag, an a coordinate to do such operation
+
+
+def matrix_solver(matrix):
+    def check_solution(augmented_matrix, solution):
+        A = augmented_matrix[:, :-1]
+        b = augmented_matrix[:, -1]
+        return np.allclose(A @ solution, b)
+
+    def generate(augmented_matrix):
+        num_vars = augmented_matrix.shape[1] - 1
+
+        # Generate all possible combinations of 0s and 1s for the variables
+        combinations = itertools.product([0, 1], repeat=num_vars)
+
+        solutions = []
+        for combination in combinations:
+            if check_solution(augmented_matrix, combination):
+                solutions.append(combination)
+
+        variables_to_be_one = set()
+        variables_to_be_zero = set()
+
+        for i in range(num_vars):
+            must_be_one = all(solution[i] == 1 for solution in solutions)
+            must_be_zero = all(solution[i] == 0 for solution in solutions)
+            if must_be_one:
+                variables_to_be_one.add(i + 1)
+
+            if must_be_zero:
+                variables_to_be_zero.add(i + 1)
+
+        return variables_to_be_zero + variables_to_be_one
+
+    return generate(matrix)
 
 
 def ai_heuristic_logic(board_state):
     if not len(queue) == 0:
         return queue.popleft()
 
-    tile_count = len(board_state)**2
-    board_rep = np.zeros((tile_count, tile_count+1))
+    tile_count = len(board_state) ** 2
+    board_rep = np.zeros((tile_count, tile_count + 1))
     col_size = len(board_state[0])
     row_size = len(board_state)
     for r in range(row_size):
@@ -29,10 +62,16 @@ def ai_heuristic_logic(board_state):
             if board_state[r][c] > 0:
                 board_rep[c + r * col_size][tile_count] = board_state[r][c]
                 for i, j in coordinates:
-                    if r + i >= 0 and j+c >= 0 and j+c < col_size and r+i < row_size:
-                        if (board_state[r+i][c+j] == -1):
-                            board_rep[c + r *
-                                      col_size][(c+j) + (r+i) * col_size] = 1
+                    if (
+                        r + i >= 0
+                        and j + c >= 0
+                        and j + c < col_size
+                        and r + i < row_size
+                    ):
+                        if board_state[r + i][c + j] == -1:
+                            board_rep[c + r * col_size][
+                                (c + j) + (r + i) * col_size
+                            ] = 1
     board_rep = Matrix(board_rep)
     board_rep.rref()
     # fill queue
@@ -46,7 +85,7 @@ def ai_heuristic_logic(board_state):
                 min += board_rep[r, c]
         if max == board_rep[r, tile_count]:
             for c in range(tile_count):
-                i, j = c//len(board_state), c % len(board_state)
+                i, j = c // len(board_state), c % len(board_state)
                 if board_rep[r, c] > 0:
                     if (i, j) not in mines:
                         queue.append(("flag", i, j))
@@ -57,7 +96,7 @@ def ai_heuristic_logic(board_state):
                         opened.add((i, j))
         elif min == board_rep[r, tile_count]:
             for c in range(tile_count):
-                i, j = c//len(board_state), c % len(board_state)
+                i, j = c // len(board_state), c % len(board_state)
                 if board_rep[r, c] > 0:
                     if (i, j) not in opened:
                         queue.append(("open", i, j))
