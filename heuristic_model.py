@@ -25,7 +25,7 @@ def ai_heuristic_logic(board_state):
     col_size = len(board_state[0])
     row_size = len(board_state)
     for r in range(row_size):
-        for c in range(len(col_size)):
+        for c in range(col_size):
             if board_state[r][c] > 0:
                 board_rep[c + r * col_size][tile_count] = board_state[r][c]
                 for i, j in coordinates:
