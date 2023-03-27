@@ -1,3 +1,4 @@
+import itertools
 from sympy import *
 import numpy as np
 from collections import deque
@@ -44,13 +45,13 @@ def matrix_solver(matrix):
             if must_be_zero:
                 variables_to_be_zero.add(i + 1)
 
-        return variables_to_be_zero + variables_to_be_one
+        return [variables_to_be_zero, variables_to_be_one]
 
     return generate(matrix)
 
 
 def ai_heuristic_logic(board_state):
-    if not len(queue) == 0:
+    if queue:
         return queue.popleft()
 
     tile_count = len(board_state) ** 2
@@ -67,23 +68,22 @@ def ai_heuristic_logic(board_state):
                         and j + c >= 0
                         and j + c < col_size
                         and r + i < row_size
+                        and board_state[r + i][c + j] == -1
                     ):
-                        if board_state[r + i][c + j] == -1:
-                            board_rep[c + r * col_size][
-                                (c + j) + (r + i) * col_size
-                            ] = 1
+                        board_rep[c + r * col_size][(c + j) + (r + i) * col_size] = 1
     board_rep = Matrix(board_rep)
     board_rep.rref()
+
     # fill queue
     for r in range(tile_count):
-        max = 0
-        min = 0
+        maximum = 0
+        minimum = 0
         for c in range(tile_count):
             if board_rep[r, c] > 0:
-                max += board_rep[r, c]
+                maximum += board_rep[r, c]
             else:
-                min += board_rep[r, c]
-        if max == board_rep[r, tile_count]:
+                minimum += board_rep[r, c]
+        if maximum == board_rep[r, tile_count]:
             for c in range(tile_count):
                 i, j = c // len(board_state), c % len(board_state)
                 if board_rep[r, c] > 0:
@@ -94,20 +94,19 @@ def ai_heuristic_logic(board_state):
                     if (i, j) not in opened:
                         queue.append(("open", i, j))
                         opened.add((i, j))
-        elif min == board_rep[r, tile_count]:
+        elif minimum == board_rep[r, tile_count]:
             for c in range(tile_count):
                 i, j = c // len(board_state), c % len(board_state)
                 if board_rep[r, c] > 0:
                     if (i, j) not in opened:
                         queue.append(("open", i, j))
                         opened.add((i, j))
-                elif board_rep[r, c] < 0:
-                    if (i, j) not in mines:
-                        queue.append(("flag", i, j))
-                        mines.add((i, j))
+                elif board_rep[r, c] < 0 and (i, j) not in mines:
+                    queue.append(("flag", i, j))
+                    mines.add((i, j))
 
     # output first move, update queue
-    if not len(queue) == 0:
+    if queue:
         return queue.popleft()
 
     # if no queue chose a random unopened tile
