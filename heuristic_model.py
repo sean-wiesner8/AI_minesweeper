@@ -69,8 +69,7 @@ def ai_heuristic_logic(board_state):
 
     # output first move, update queue
     if not len(queue) == 0:
-        temp = queue.popleft()
-        return temp
+        return queue.popleft()
 
     # if no queue chose a random unopened tile
     unopened = np.argwhere(board_state == -1)
