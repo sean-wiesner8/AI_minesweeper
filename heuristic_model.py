@@ -1,4 +1,5 @@
 import itertools
+from math import sqrt
 from sympy import *
 import numpy as np
 from collections import deque
@@ -11,7 +12,8 @@ queue = deque()
 
 # the change in tile for each of the 8 surrounding tiles
 
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
+               (0, 1), (1, -1), (1, 0), (1, 1)}
 
 # given a board_state output an opp: open or flag, an a coordinate to do such operation
 
@@ -23,6 +25,8 @@ def matrix_solver(matrix):
         return np.allclose(A @ solution, b)
 
     def generate(augmented_matrix):
+        R, C = augmented_matrix.shape
+        R = int(sqrt(R))
         num_vars = augmented_matrix.shape[1] - 1
 
         # Generate all possible combinations of 0s and 1s for the variables
@@ -40,10 +44,10 @@ def matrix_solver(matrix):
             must_be_one = all(solution[i] == 1 for solution in solutions)
             must_be_zero = all(solution[i] == 0 for solution in solutions)
             if must_be_one:
-                variables_to_be_one.add(i + 1)
+                variables_to_be_one.add((i // R, i - (i // R) * R))
 
             if must_be_zero:
-                variables_to_be_zero.add(i + 1)
+                variables_to_be_zero.add((i // R, i - (i // R) * R))
 
         return [variables_to_be_zero, variables_to_be_one]
 
@@ -70,7 +74,8 @@ def ai_heuristic_logic(board_state):
                         and r + i < row_size
                         and board_state[r + i][c + j] == -1
                     ):
-                        board_rep[c + r * col_size][(c + j) + (r + i) * col_size] = 1
+                        board_rep[c + r *
+                                  col_size][(c + j) + (r + i) * col_size] = 1
     board_rep = Matrix(board_rep)
     board_rep.rref()
 
