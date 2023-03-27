@@ -141,8 +141,6 @@ def printed_game_loop(mode):
     move_count = 0
     first_move = True
     while not game_won(board_state, bomb_count) and not game_lost(board, board_state):
-        print("Move " + str(move_count))
-        print_board(board, board_state)
         if mode == "human":
             read = input()
             read_split = read.split()
@@ -170,8 +168,8 @@ def printed_game_loop(mode):
             board_state = flag_tile(board_state, r, c)
         print()
         move_count += 1
-    print("Move " + str(move_count))
-    print_board(board, board_state)
+        print("Move: " + opp + " " + str(r) + " " + str(c))
+        print_board(board, board_state)
     if game_lost(board, board_state):
         print("you lost")
         return False
