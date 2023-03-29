@@ -114,5 +114,5 @@ def ai_heuristic_logic(board_state):
     unopened = np.argwhere(board_state == -1)
     index = np.random.choice(len(unopened))
     r, c = unopened[index][0], unopened[index][1]
-    opened.add((r, c))
+    empty.add((r, c))
     return ("open", r, c)
