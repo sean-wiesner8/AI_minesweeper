@@ -40,8 +40,42 @@ class TestInitBoardState(unittest.TestCase):
 
 class TestOpenTile(unittest.TestCase):
 
-    def test_open_tile_success(self):
-        pass
+    def test_open_tile_flagged(self):
+        m_indices = [(0, 0)]
+        board = init_test_board(10, m_indices)
+        f_indices = [(0, 0)]
+        board_state = init_test_board_state(10, f_indices, [])
+        actual_val = minesweeper.open_tile(board_state, board, 0, 0)
+        expected_val = board_state
+        self.assertTrue((actual_val == expected_val).all(),
+                        f"expected {expected_val} but got {actual_val}")
+
+    def test_open_tile_bomb(self):
+        m_indices = [(5, 5)]
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [])
+        actual_val = minesweeper.open_tile(board_state, board, 5, 5)
+        expected_val = board_state.copy()
+        self.assertTrue((actual_val == expected_val).all(),
+                        f"expected {expected_val} but got {actual_val}")
+
+    def test_open_tile_bomb_nearby(self):
+        m_indices = [(4, 4)]
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [])
+        actual_val = minesweeper.open_tile(board_state, board, 5, 5)
+        expected_val = board_state.copy()
+        expected_val[5][5] = 1
+        self.assertTrue((actual_val == expected_val).all(),
+                        f"expected {expected_val} but got {actual_val}")
+
+    def test_open_tile_no_bombs(self):
+        board = init_test_board(10, [])
+        board_state = init_test_board_state(10, [], [])
+        actual_val = minesweeper.open_tile(board_state, board, 5, 5)
+        expected_val = np.zeros((10, 10))
+        self.assertTrue((actual_val == expected_val).all(),
+                        f"expected {expected_val} but got {actual_val}")
 
 
 class TestFlagTile(unittest.TestCase):
