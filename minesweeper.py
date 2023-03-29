@@ -96,7 +96,7 @@ def game_lost(board, board_state):
     return False
 
 
-"""check to see if game has been won, where wining is defined as """
+"""check to see if game has been won, where wining is defined as all empty tiles have been opened."""
 
 
 def game_won(board_state, bomb_count):
@@ -108,7 +108,7 @@ def game_won(board_state, bomb_count):
     return open_tiles == len(board_state) * len(board_state[0]) - bomb_count
 
 
-"""print a row of the game board to the console"""
+"""print a row of the game board to the console."""
 
 
 def print_row(board, board_state, row_num):
@@ -123,7 +123,7 @@ def print_row(board, board_state, row_num):
             print(board_state[row_num][c], end=" ")
 
 
-"""print the game board to the console"""
+"""print the game board to the console."""
 
 
 def print_board(board, board_state):
@@ -132,7 +132,7 @@ def print_board(board, board_state):
         print()
 
 
-"""game loop for minesweeper game mode"""
+"""game loop for minesweeper game mode."""
 
 
 def printed_game_loop(mode):
