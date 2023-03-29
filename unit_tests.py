@@ -4,6 +4,22 @@ import numpy as np
 import unittest
 
 
+def init_test_board(size, m_indices):
+    init_board = np.zeros((size, size))
+    for i, j in m_indices:
+        init_board[i][j] = 1
+    return init_board
+
+
+def init_test_board_state(size, f_indices, o_indices):
+    board_state = minesweeper.init_board_state(size)
+    for i, j in f_indices:
+        board_state[i][j] = -2
+    for i, j in o_indices:
+        board_state[i][j] = -1
+    return board_state
+
+
 class TestInitBoard(unittest.TestCase):
 
     def test_init_board_10(self):
@@ -16,7 +32,7 @@ class TestInitBoard(unittest.TestCase):
             self.assertEqual(init_board[4, 4], 0, "start tile should be empty")
 
     def test_init_board_state():
-        
+
         pass
 
     def test_open_tile():
