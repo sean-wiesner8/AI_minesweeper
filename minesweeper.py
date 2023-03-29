@@ -45,7 +45,7 @@ If there are no surrounding bombs, open the eight neighbor tiles."""
 def open_tile(board_state, board, row, col):
     if board_state[row][col] != flaged:
         board_state[row][col] = count_surrounding_bombs(board, row, col)
-        if board_state[row][col] == empty_tile and board[row][col] != mine:
+        if board_state[row][col] == 0 and board[row][col] != mine:
             for r, c in coordinates:
                 if (
                     row + r >= 0
