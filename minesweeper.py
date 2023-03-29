@@ -28,7 +28,7 @@ def init_board(size, mine, r, c):
     return board
 
 
-"""initalize minesweeper with a [size] x [size] board where all tiles are unopened"""
+"""initalize minesweeper with a [size] x [size] board state where all tiles are unopened"""
 
 
 def init_board_state(size):
@@ -36,13 +36,14 @@ def init_board_state(size):
     return board_state
 
 
-"""open a tile if not flagged. If bomb, mark lost condition."""
+"""open a tile if not flagged. In board state update the tile with the amount of surrounding bombs.
+If there are no surrounding bombs, open the eight neighbor tiles."""
 
 
 def open_tile(board_state, board, row, col):
     if board_state[row][col] != flaged:
         board_state[row][col] = count_surrounding_bombs(board, row, col)
-        if board_state[row][col] == empty_tile:
+        if board_state[row][col] == empty_tile and board[row][col] != mine:
             for r, c in coordinates:
                 if (
                     row + r >= 0
@@ -56,7 +57,7 @@ def open_tile(board_state, board, row, col):
     return board_state
 
 
-"""flag a single tile if it is unflagged and unopened. If flagged unflag"""
+"""flag a single tile if it is unflagged and unopened. If flagged, unflag."""
 
 
 def flag_tile(board_state, row, col):
@@ -67,7 +68,7 @@ def flag_tile(board_state, row, col):
     return board_state
 
 
-"""check how many bombs are surrounding a particular tile"""
+"""Check how many bombs are in the surrounding eight tiles around a particular tile"""
 
 
 def count_surrounding_bombs(board, row, col):
@@ -84,7 +85,7 @@ def count_surrounding_bombs(board, row, col):
     return count
 
 
-"""check to see if game has been lost"""
+"""check to see if game has been lost, where losing is defined as a mine being opened."""
 
 
 def game_lost(board, board_state):
@@ -95,7 +96,7 @@ def game_lost(board, board_state):
     return False
 
 
-"""check to see if game has been won"""
+"""check to see if game has been won, where wining is defined as """
 
 
 def game_won(board_state, bomb_count):
