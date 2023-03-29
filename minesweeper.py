@@ -42,7 +42,7 @@ def init_board_state(size):
 def open_tile(board_state, board, row, col):
     if board_state[row][col] != flaged:
         board_state[row][col] = count_surrounding_bombs(board, row, col)
-        if board_state[row][col] == 0:
+        if board_state[row][col] == empty_tile:
             for r, c in coordinates:
                 if (
                     row + r >= 0
