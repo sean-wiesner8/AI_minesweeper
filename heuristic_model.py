@@ -1,5 +1,3 @@
-import itertools
-from math import sqrt
 from sympy import *
 import numpy as np
 from collections import deque
@@ -14,8 +12,7 @@ queue = deque()
 
 # the change in tile for each of the 8 surrounding tiles
 
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
-               (0, 1), (1, -1), (1, 0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
 
 
 """ given an n x n board state, create an n^2 x n^2 + 1 matrix representation. Each
@@ -25,6 +22,7 @@ with (row_index, col_index) in board_state would map to row_index * column_size
 and has a postive surrounding mine count, mark each of the unopened tiles as 1 
 in the corresponding column index. The final row of the matrix should be equal to
 the amount of surrounding mines if the tile has been opened."""
+
 
 def to_matrix(board_state):
     tile_count = len(board_state) ** 2
@@ -43,8 +41,8 @@ def to_matrix(board_state):
                         and r + i < row_size
                         and board_state[r + i][c + j] == -1
                     ):
-                        board_rep[c + r *
-                                  col_size][(c + j) + (r + i) * col_size] = 1
+                        board_rep[c + r * col_size][(c + j) + (r + i) * col_size] = 1
+    return board_rep
 
 
 """For the row reduced version of the matrix representation of board_state,
@@ -54,6 +52,7 @@ If it is equal to the maximum, positive tiles are mines and negative tiles are e
 If it is equal to the minimum, postive tiles are empty and negative tiles are mines.
 The given information should be added to queue, which represents certain moves. Additionally, 
 the AI knowledge base (the sets mines and empty) should be updated."""
+
 
 def analyze_matrix(board_rep, board_state):
     tile_count = len(board_state) ** 2
@@ -90,8 +89,8 @@ def analyze_matrix(board_rep, board_state):
 
 """Given a board_state output an opp: open or flag, an a coordinate r, c to do such operation """
 
-def ai_heuristic_logic(board_state):
 
+def ai_heuristic_logic(board_state):
     # If trivial move still exists, make trivial move
     if queue:
         return queue.popleft()
@@ -104,7 +103,7 @@ def ai_heuristic_logic(board_state):
     board_rep.rref()
 
     # determine flag and move operations from the row reduced board representation
-    analyze_matrix()
+    analyze_matrix(board_rep, board_state)
 
     # If trivial move was found, make trivial move
     if queue:
