@@ -8,6 +8,9 @@ import heuristic_model
 mine = 1
 empty_tile = 0
 
+BOMB_COUNT = 10
+BOARD_SIZE = 8
+
 # initalized at the begining of the game, board state represents the data the
 # user can see.
 # board state constants
@@ -22,6 +25,7 @@ coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
 """initalize minesweeper with a [size] x [size] board and mine count [mine]. 
 does not allow a bomb to be initated at (r,c)"""
 
+
 def init_board(size, mine, r, c):
     board = np.zeros((size, size))
     first_move = r*size + c
@@ -34,6 +38,7 @@ def init_board(size, mine, r, c):
 
 """initalize minesweeper with a [size] x [size] board state where all tiles are unopened"""
 
+
 def init_board_state(size):
     board_state = np.full((size, size), unopened)
     return board_state
@@ -41,6 +46,7 @@ def init_board_state(size):
 
 """open a tile if not flagged. In board state update the tile with the amount of surrounding bombs.
 If there are no surrounding bombs, open the eight neighbor tiles."""
+
 
 def open_tile(board_state, board, row, col):
     if board_state[row][col] != flaged:
@@ -61,6 +67,7 @@ def open_tile(board_state, board, row, col):
 
 """flag a single tile if it is unflagged and unopened. If flagged, unflag."""
 
+
 def flag_tile(board_state, row, col):
     if board_state[row][col] != flaged and board_state[row][col] < 0:
         board_state[row][col] = flaged
@@ -70,6 +77,7 @@ def flag_tile(board_state, row, col):
 
 
 """Check how many bombs are in the surrounding eight tiles around a particular tile"""
+
 
 def count_surrounding_bombs(board, row, col):
     count = 0
@@ -98,6 +106,7 @@ def game_lost(board, board_state):
 
 """check to see if game has been won, where wining is defined as all empty tiles have been opened."""
 
+
 def game_won(board_state, bomb_count):
     open_tiles = 0
     for i in range(len(board_state)):
@@ -108,6 +117,7 @@ def game_won(board_state, bomb_count):
 
 
 """print a row of the game board to the console."""
+
 
 def print_row(board, board_state, row_num):
     for c in range(len(board[0])):
@@ -123,6 +133,7 @@ def print_row(board, board_state, row_num):
 
 """print the game board to the console."""
 
+
 def print_board(board, board_state):
     for r in range(len(board)):
         print_row(board, board_state, r)
@@ -131,9 +142,10 @@ def print_board(board, board_state):
 
 """game loop for minesweeper game mode."""
 
+
 def printed_game_loop(mode):
-    bomb_count = 10
-    board_size = 8
+    bomb_count = BOMB_COUNT
+    board_size = BOARD_SIZE
     board = np.zeros((board_size, board_size))
     board_state = init_board_state(board_size)
     move_count = 0
@@ -177,6 +189,7 @@ def printed_game_loop(mode):
 
 
 """output the number of wins for a given number of trials"""
+
 
 def trials(count):
     win = 0
