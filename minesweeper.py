@@ -19,8 +19,7 @@ flaged = -2
 
 
 # the change in tile for each of the 8 surrounding tiles
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
-               (0, 1), (1, -1), (1, 0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
 
 """initalize minesweeper with a [size] x [size] board and mine count [mine]. 
 does not allow a bomb to be initated at (r,c)"""
@@ -28,9 +27,9 @@ does not allow a bomb to be initated at (r,c)"""
 
 def init_board(size, mine, r, c):
     board = np.zeros((size, size))
-    first_move = r*size + c
+    first_move = r * size + c
     left = list(range(0, first_move))
-    right = list(range(first_move+1, np.square(size)))
+    right = list(range(first_move + 1, np.square(size)))
     bombs = random.sample(left + right, mine)
     board[np.unravel_index(bombs, board.shape)] = 1
     return board
@@ -60,8 +59,7 @@ def open_tile(board_state, board, row, col):
                     and col + c < len(board[0])
                 ):
                     if board_state[row + r][col + c] == unopened:
-                        board_state = open_tile(
-                            board_state, board, row + r, col + c)
+                        board_state = open_tile(board_state, board, row + r, col + c)
     return board_state
 
 
@@ -172,8 +170,7 @@ def printed_game_loop(mode):
             if first_move:
                 board = init_board(board_size, bomb_count, r, c)
                 first_move = False
-            board_state = open_tile(
-                board_state, board, r, c)
+            board_state = open_tile(board_state, board, r, c)
         if opp == "flag":
             board_state = flag_tile(board_state, r, c)
         print()
@@ -193,17 +190,18 @@ def printed_game_loop(mode):
 
 def trials(count):
     win = 0
-    while count > 0:
+    iteration = count
+    while iteration > 0:
         if printed_game_loop("ai"):
             win += 1
-        count -= 1
-    print("Trials: " + count)
-    print("Wins: " + win)
-    print("Sucess Rate: " + win / count)
+        iteration -= 1
+    print("Trials: " + str(count))
+    print("Wins: " + str(win))
+    print("Sucess Rate: " + str(win / count))
 
 
 def main():
-    printed_game_loop("ai")
+    trials(1)
 
 
 if __name__ == "__main__":
