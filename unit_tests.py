@@ -55,12 +55,12 @@ class TestInitBoardState(unittest.TestCase):
         self.assertEqual(
             init_board_state.shape,
             (5, 5),
-            "board state is initalized to inccorect size",
+            "board state is initialized to incorrect size",
         )
         self.assertEqual(
             np.all(init_board_state),
             True,
-            "when initalized board state has an open tile",
+            "when initialized board state has an open tile",
         )
 
 
