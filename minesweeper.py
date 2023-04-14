@@ -9,8 +9,11 @@ import time
 mine = 1
 empty_tile = 0
 
-BOARD_SIZE = int(input("Enter board size: "))
-DIFFICULTY = int(input("Enter difficulty (1: easy, 2: medium, 3: hard): "))
+input_size = input("Enter board size: ")
+input_difficulty = input("Enter difficulty (1: easy, 2: medium, 3: hard): ")
+BOARD_SIZE = int(input_size) if input_size else 10
+DIFFICULTY = int(input_difficulty) if input_difficulty else 1
+
 if DIFFICULTY == 1:
     BOMB_COUNT = int(0.10 * (BOARD_SIZE ** 2)) + 1
 elif DIFFICULTY == 2:
