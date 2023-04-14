@@ -14,7 +14,6 @@ queue = deque()
 
 coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
 
-
 """ given an n x n board state, create an n^2 x n^2 + 1 matrix representation. Each
 row index and col index corresponds to a particular tile. For example a tile index
 with (row_index, col_index) in board_state would map to row_index * column_size
@@ -50,8 +49,6 @@ def to_matrix(board_state):
                         and board_state[r + i][c + j] == -2
                     ):
                         board_rep[c + r * col_size][tile_count] -= 1
-
-    print(board_rep)
     return board_rep
 
 
@@ -102,10 +99,6 @@ def analyze_matrix(board_rep, board_state):
 
 
 def ai_heuristic_logic(board_state):
-    # If trivial move still exists, make trivial move
-    if queue:
-        return queue.popleft()
-
     # create a matrix representation of the board_state
     board_rep = to_matrix(board_state)
 

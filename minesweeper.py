@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import heuristic_model
+import time
 
 # initalized after the first move, board represents the data hidden to the user.
 # Each board is a certain size and has a certain mine count
@@ -8,8 +9,8 @@ import heuristic_model
 mine = 1
 empty_tile = 0
 
-BOMB_COUNT = 2
-BOARD_SIZE = 3
+BOMB_COUNT = 10
+BOARD_SIZE = 9
 
 # initalized at the begining of the game, board state represents the data the
 # user can see.
@@ -189,19 +190,22 @@ def printed_game_loop(mode):
 
 
 def trials(count):
+    start_time = time.time()
     win = 0
     iteration = count
     while iteration > 0:
         if printed_game_loop("ai"):
             win += 1
         iteration -= 1
+    end_time = time.time()
     print("Trials: " + str(count))
     print("Wins: " + str(win))
     print("Sucess Rate: " + str(win / count))
+    print("elapsed time: " + str(end_time - start_time))
 
 
 def main():
-    trials(10)
+    trials(1)
 
 
 if __name__ == "__main__":
