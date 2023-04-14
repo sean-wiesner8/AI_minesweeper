@@ -9,8 +9,8 @@ import time
 mine = 1
 empty_tile = 0
 
-BOMB_COUNT = 10
-BOARD_SIZE = 9
+BOARD_SIZE = int(input("Enter board size: "))
+BOMB_COUNT = int(0.15 * (BOARD_SIZE ** 2)) + 1
 
 # initalized at the begining of the game, board state represents the data the
 # user can see.
