@@ -10,7 +10,13 @@ mine = 1
 empty_tile = 0
 
 BOARD_SIZE = int(input("Enter board size: "))
-BOMB_COUNT = int(0.15 * (BOARD_SIZE ** 2)) + 1
+DIFFICULTY = int(input("Enter difficulty (1: easy, 2: medium, 3: hard): "))
+if DIFFICULTY == 1:
+    BOMB_COUNT = int(0.10 * (BOARD_SIZE ** 2)) + 1
+elif DIFFICULTY == 2:
+    BOMB_COUNT = int(0.15 * (BOARD_SIZE ** 2)) + 1
+else:
+    BOMB_COUNT = int(0.2 * (BOARD_SIZE ** 2)) + 1
 
 # initalized at the begining of the game, board state represents the data the
 # user can see.
