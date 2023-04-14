@@ -12,7 +12,8 @@ queue = deque()
 
 # the change in tile for each of the 8 surrounding tiles
 
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
+               (0, 1), (1, -1), (1, 0), (1, 1)}
 
 """ given an n x n board state, create an n^2 x n^2 + 1 matrix representation. Each
 row index and col index corresponds to a particular tile. For example a tile index
@@ -40,7 +41,8 @@ def to_matrix(board_state):
                         and r + i < row_size
                         and board_state[r + i][c + j] == -1
                     ):
-                        board_rep[c + r * col_size][(c + j) + (r + i) * col_size] = 1
+                        board_rep[c + r *
+                                  col_size][(c + j) + (r + i) * col_size] = 1
                     elif (
                         r + i >= 0
                         and j + c >= 0

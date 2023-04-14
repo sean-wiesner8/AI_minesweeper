@@ -20,7 +20,8 @@ flaged = -2
 
 
 # the change in tile for each of the 8 surrounding tiles
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
+               (0, 1), (1, -1), (1, 0), (1, 1)}
 
 """initalize minesweeper with a [size] x [size] board and mine count [mine]. 
 does not allow a bomb to be initated at (r,c)"""
@@ -60,7 +61,8 @@ def open_tile(board_state, board, row, col):
                     and col + c < len(board[0])
                 ):
                     if board_state[row + r][col + c] == unopened:
-                        board_state = open_tile(board_state, board, row + r, col + c)
+                        board_state = open_tile(
+                            board_state, board, row + r, col + c)
     return board_state
 
 
