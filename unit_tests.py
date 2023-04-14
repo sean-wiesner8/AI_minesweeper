@@ -2,6 +2,8 @@ import heuristic_model
 import minesweeper
 import numpy as np
 import unittest
+from sympy import *
+from collections import deque
 
 
 def init_test_board(size, m_indices):
@@ -227,7 +229,7 @@ class TestAIHeuristicLogic(unittest.TestCase):
         board_state = init_test_board_state(10, [], [], board)
         actual_val = heuristic_model.to_matrix(board_state)
         tile_count = len(board_state) ** 2
-        expected_val = board_rep = np.zeros((tile_count, tile_count + 1))
+        expected_val = np.zeros((tile_count, tile_count + 1))
         self.assertTrue(
             (actual_val == expected_val).all(),
             f"expected {expected_val} but got {actual_val}",
@@ -271,11 +273,41 @@ class TestAIHeuristicLogic(unittest.TestCase):
             f"expected {expected_val} but got {actual_val}",
         )
 
-    def test_analyze_matrix(self):
-        pass
+    def test_analyze_matrix_all_unopened(self):
+        m_indices = [(0, 0)]
+        board = init_test_board(2, m_indices)
+        board_state = init_test_board_state(2, [], [], board)
+        board_state = minesweeper.open_tile(board_state, board, 0, 1)
+        board_state = minesweeper.open_tile(board_state, board, 1, 0)
+        board_state = minesweeper.open_tile(board_state, board, 1, 1)
+        actual_val = heuristic_model.to_matrix(board_state)
+        board_rep = Matrix(board_rep)
+        board_rep.rref()
+        actual_val = heuristic_model.analyze_matrix(board_rep, board_state)
+        expected_val = deque()
+        expected_val.append("flag", 0, 0)
+        while actual_val and expected_val:
+            self.assertEqual(
+                actual_val.popleft(),
+                expected_val.popleft(),
+                f"expected {expected_val} but got {actual_val}",
+            )
 
-    def test_ai_heuristic_logic(self):
-        pass
+    def test_analyze_matrix_all_unopened(self):
+        m_indices = [(4, 4)]
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
+        board_rep = heuristic_model.to_matrix(board_state)
+        board_rep = Matrix(board_rep)
+        board_rep.rref()
+        actual_val = heuristic_model.analyze_matrix(board_rep, board_state)
+        expected_val = deque()
+        while actual_val and expected_val:
+            self.assertEqual(
+                actual_val.popleft(),
+                expected_val.popleft(),
+                f"expected {expected_val} but got {actual_val}",
+            )
 
 
 unittest.main()

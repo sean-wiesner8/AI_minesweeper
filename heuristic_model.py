@@ -85,6 +85,7 @@ def analyze_matrix(board_rep, board_state):
                 elif board_rep[r, c] < 0 and (i, j) not in mines:
                     queue.append(("flag", i, j))
                     mines.add((i, j))
+    return queue
 
 
 """Given a board_state output an opp: open or flag, an a coordinate r, c to do such operation """
