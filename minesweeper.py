@@ -19,7 +19,7 @@ if DIFFICULTY == 1:
 elif DIFFICULTY == 2:
     BOMB_COUNT = int(0.15 * (BOARD_SIZE ** 2)) + 1
 else:
-    BOMB_COUNT = int(0.2 * (BOARD_SIZE ** 2)) + 1
+    BOMB_COUNT = int(0.25 * (BOARD_SIZE ** 2)) + 1
 
 # initalized at the begining of the game, board state represents the data the
 # user can see.
