@@ -42,6 +42,16 @@ def to_matrix(board_state):
                         and board_state[r + i][c + j] == -1
                     ):
                         board_rep[c + r * col_size][(c + j) + (r + i) * col_size] = 1
+                    elif (
+                        r + i >= 0
+                        and j + c >= 0
+                        and j + c < col_size
+                        and r + i < row_size
+                        and board_state[r + i][c + j] == -2
+                    ):
+                        board_rep[c + r * col_size][tile_count] -= 1
+
+    print(board_rep)
     return board_rep
 
 
@@ -115,4 +125,5 @@ def ai_heuristic_logic(board_state):
     index = np.random.choice(len(unopened))
     r, c = unopened[index][0], unopened[index][1]
     empty.add((r, c))
+    print("random!")
     return ("open", r, c)

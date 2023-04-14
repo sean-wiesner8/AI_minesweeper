@@ -201,7 +201,7 @@ def trials(count):
 
 
 def main():
-    trials(1)
+    trials(10)
 
 
 if __name__ == "__main__":
