@@ -8,8 +8,8 @@ import heuristic_model
 mine = 1
 empty_tile = 0
 
-BOMB_COUNT = 10
-BOARD_SIZE = 8
+BOMB_COUNT = 2
+BOARD_SIZE = 3
 
 # initalized at the begining of the game, board state represents the data the
 # user can see.
@@ -109,7 +109,7 @@ def game_won(board_state, bomb_count):
     open_tiles = 0
     for i in range(len(board_state)):
         for j in range(len(board_state[0])):
-            if board_state[i][j] < 0:
+            if board_state[i][j] >= 0:
                 open_tiles += 1
     return open_tiles == len(board_state) * len(board_state[0]) - bomb_count
 
