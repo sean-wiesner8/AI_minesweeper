@@ -9,18 +9,6 @@ import time
 mine = 1
 empty_tile = 0
 
-input_size = input("Enter board size: ")
-input_difficulty = input("Enter difficulty (1: easy, 2: medium, 3: hard): ")
-BOARD_SIZE = int(input_size) if input_size else 10
-DIFFICULTY = int(input_difficulty) if input_difficulty else 1
-
-if DIFFICULTY == 1:
-    BOMB_COUNT = int(0.10 * (BOARD_SIZE ** 2)) + 1
-elif DIFFICULTY == 2:
-    BOMB_COUNT = int(0.15 * (BOARD_SIZE ** 2)) + 1
-else:
-    BOMB_COUNT = int(0.25 * (BOARD_SIZE ** 2)) + 1
-
 # initalized at the begining of the game, board state represents the data the
 # user can see.
 # board state constants
@@ -29,8 +17,7 @@ flaged = -2
 
 
 # the change in tile for each of the 8 surrounding tiles
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
-               (0, 1), (1, -1), (1, 0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
 
 """initalize minesweeper with a [size] x [size] board and mine count [mine]. 
 does not allow a bomb to be initated at (r,c)"""
@@ -70,8 +57,7 @@ def open_tile(board_state, board, row, col):
                     and col + c < len(board[0])
                 ):
                     if board_state[row + r][col + c] == unopened:
-                        board_state = open_tile(
-                            board_state, board, row + r, col + c)
+                        board_state = open_tile(board_state, board, row + r, col + c)
     return board_state
 
 
@@ -153,9 +139,7 @@ def print_board(board, board_state):
 """game loop for minesweeper game mode."""
 
 
-def printed_game_loop(mode):
-    bomb_count = BOMB_COUNT
-    board_size = BOARD_SIZE
+def printed_game_loop(mode, bomb_count, board_size):
     board = np.zeros((board_size, board_size))
     board_state = init_board_state(board_size)
     move_count = 0
@@ -200,14 +184,24 @@ def printed_game_loop(mode):
 """output the number of wins for a given number of trials"""
 
 
-def trials(count):
+def trials():
+    board_size = int(input("Enter board size: "))
+    input_difficulty = int(input("Enter difficulty (1: easy, 2: medium, 3: hard): "))
+    iterations = int(input("input number of trial iteration: "))
+    count = iterations
+    if input_difficulty == 1:
+        bomb_count = int(0.10 * (board_size**2)) + 1
+    elif input_difficulty == 2:
+        bomb_count = int(0.15 * (board_size**2)) + 1
+    else:
+        bomb_count = int(0.25 * (board_size**2)) + 1
+
     start_time = time.time()
     win = 0
-    iteration = count
-    while iteration > 0:
-        if printed_game_loop("ai"):
+    while iterations > 0:
+        if printed_game_loop("ai", bomb_count, board_size):
             win += 1
-        iteration -= 1
+        iterations -= 1
     end_time = time.time()
     print("Trials: " + str(count))
     print("Wins: " + str(win))
@@ -216,7 +210,7 @@ def trials(count):
 
 
 def main():
-    trials(10)
+    trials()
 
 
 if __name__ == "__main__":
