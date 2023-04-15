@@ -12,8 +12,7 @@ queue = deque()
 
 # the change in tile for each of the 8 surrounding tiles
 
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
-               (0, 1), (1, -1), (1, 0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
 
 """ given an n x n board state, create an n^2 x n^2 + 1 matrix representation. Each
 row index and col index corresponds to a particular tile. For example a tile index
@@ -41,8 +40,7 @@ def to_matrix(board_state):
                         and r + i < row_size
                         and board_state[r + i][c + j] == -1
                     ):
-                        board_rep[c + r *
-                                  col_size][(c + j) + (r + i) * col_size] = 1
+                        board_rep[c + r * col_size][(c + j) + (r + i) * col_size] = 1
                     elif (
                         r + i >= 0
                         and j + c >= 0
@@ -94,7 +92,6 @@ def analyze_matrix(board_rep, board_state):
                 elif board_rep[r, c] < 0 and (i, j) not in mines:
                     queue.append(("flag", i, j))
                     mines.add((i, j))
-    return queue
 
 
 """Given a board_state output an opp: open or flag, an a coordinate r, c to do such operation """
@@ -106,6 +103,11 @@ def ai_heuristic_logic(board_state, first_move):
             queue.pop()
         mines.clear()
         empty.clear()
+
+    # If a move remains from last AI call, return move
+    if queue:
+        return queue.popleft()
+
     # create a matrix representation of the board_state
     board_rep = to_matrix(board_state)
 
