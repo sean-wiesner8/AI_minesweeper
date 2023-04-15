@@ -98,7 +98,12 @@ def analyze_matrix(board_rep, board_state):
 """Given a board_state output an opp: open or flag, an a coordinate r, c to do such operation """
 
 
-def ai_heuristic_logic(board_state):
+def ai_heuristic_logic(board_state, first_move):
+    if first_move:
+        while queue:
+            queue.pop()
+        mines.clear()
+        empty.clear()
     # create a matrix representation of the board_state
     board_rep = to_matrix(board_state)
 

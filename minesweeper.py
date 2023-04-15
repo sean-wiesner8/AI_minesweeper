@@ -166,7 +166,7 @@ def printed_game_loop(mode):
                     print("Out of bounds")
                     continue
         else:
-            opp, r, c = heuristic_model.ai_heuristic_logic(board_state)
+            opp, r, c = heuristic_model.ai_heuristic_logic(board_state, first_move)
         if opp == "open":
             if first_move:
                 board = init_board(board_size, bomb_count, r, c)
@@ -205,7 +205,7 @@ def trials(count):
 
 
 def main():
-    trials(1)
+    trials(10)
 
 
 if __name__ == "__main__":
