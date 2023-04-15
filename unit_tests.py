@@ -14,7 +14,8 @@ def init_test_board(size, m_indices):
 
 
 # the change in tile for each of the 8 surrounding tiles
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
+               (0, 1), (1, -1), (1, 0), (1, 1)}
 
 
 def init_test_board_state(size, f_indices, o_indices, board):
@@ -54,12 +55,12 @@ class TestInitBoardState(unittest.TestCase):
         self.assertEqual(
             init_board_state.shape,
             (5, 5),
-            "board state is initalized to inccorect size",
+            "board state is initialized to incorrect size",
         )
         self.assertEqual(
             np.all(init_board_state),
             True,
-            "when initalized board state has an open tile",
+            "when initialized board state has an open tile",
         )
 
 
@@ -200,7 +201,8 @@ class TestGameWon(unittest.TestCase):
     def game_game_won(self):
         m_indices = [(0, 0)]
         board = init_test_board(2, m_indices)
-        board_state = init_test_board_state(1, [], [(0, 1), (1, 0), (1, 1)], board)
+        board_state = init_test_board_state(
+            1, [], [(0, 1), (1, 0), (1, 1)], board)
         actual_val = minesweeper.game_won(board_state, 1)
         expected_val = True
         self.assertEqual(

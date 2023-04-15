@@ -9,8 +9,17 @@ import time
 mine = 1
 empty_tile = 0
 
-BOMB_COUNT = 10
-BOARD_SIZE = 9
+input_size = input("Enter board size: ")
+input_difficulty = input("Enter difficulty (1: easy, 2: medium, 3: hard): ")
+BOARD_SIZE = int(input_size) if input_size else 10
+DIFFICULTY = int(input_difficulty) if input_difficulty else 1
+
+if DIFFICULTY == 1:
+    BOMB_COUNT = int(0.10 * (BOARD_SIZE ** 2)) + 1
+elif DIFFICULTY == 2:
+    BOMB_COUNT = int(0.15 * (BOARD_SIZE ** 2)) + 1
+else:
+    BOMB_COUNT = int(0.25 * (BOARD_SIZE ** 2)) + 1
 
 # initalized at the begining of the game, board state represents the data the
 # user can see.
@@ -20,7 +29,8 @@ flaged = -2
 
 
 # the change in tile for each of the 8 surrounding tiles
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
+               (0, 1), (1, -1), (1, 0), (1, 1)}
 
 """initalize minesweeper with a [size] x [size] board and mine count [mine]. 
 does not allow a bomb to be initated at (r,c)"""
@@ -60,7 +70,8 @@ def open_tile(board_state, board, row, col):
                     and col + c < len(board[0])
                 ):
                     if board_state[row + r][col + c] == unopened:
-                        board_state = open_tile(board_state, board, row + r, col + c)
+                        board_state = open_tile(
+                            board_state, board, row + r, col + c)
     return board_state
 
 
