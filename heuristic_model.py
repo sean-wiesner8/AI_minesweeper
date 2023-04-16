@@ -1,5 +1,6 @@
 from sympy import *
 import numpy as np
+import math
 from collections import deque
 
 # represents the knowledge base of the AI, so that moves are not duplicated
@@ -94,10 +95,17 @@ def analyze_matrix(board_rep, board_state):
                     mines.add((i, j))
 
 
+"""Given a board_state and bomb_count, output the tile with the lowest probability """
+
+
+def select_tile_with_lowest_probability(board_state, bomb_count):
+    pass
+
+
 """Given a board_state output an opp: open or flag, an a coordinate r, c to do such operation """
 
 
-def ai_heuristic_logic(board_state, first_move):
+def ai_heuristic_logic(board_state, first_move, bomb_count):
     if first_move:
         while queue:
             queue.pop()
@@ -122,10 +130,20 @@ def ai_heuristic_logic(board_state, first_move):
     if queue:
         return queue.popleft()
 
+    # test iteration shows how we added new features to the AI
+    # 0 is the basic AI where it makes a random move if there are no certain moves
+    # 1 takes into account the probability of each tile and returns the one with lowest chance of being a mine
+    # 2 adds a distance heuristic
+    test_iteration = 0
+
     # if no queue chose a random unopened tile
-    unopened = np.argwhere(board_state == -1)
-    index = np.random.choice(len(unopened))
-    r, c = unopened[index][0], unopened[index][1]
-    empty.add((r, c))
-    print("random!")
-    return ("open", r, c)
+    if test_iteration == 1:
+        unopened = np.argwhere(board_state == -1)
+        index = np.random.choice(len(unopened))
+        r, c = unopened[index][0], unopened[index][1]
+        empty.add((r, c))
+        print("random!")
+        return ("open", r, c)
+    else:
+        r, c = select_tile_with_lowest_probability(board_state, bomb_count)
+        return ("open", r, c)
