@@ -95,6 +95,70 @@ def analyze_matrix(board_rep, board_state):
                     mines.add((i, j))
 
 
+"""Given a board_state, run the CSP solver"""
+
+
+def CSP_solver(board_state):
+    # create a matrix representation of the board_state
+    board_rep = to_matrix(board_state)
+
+    # row reduce the board representation
+    board_rep = Matrix(board_rep)
+    board_rep.rref()
+
+    # determine flag and move operations from the row reduced board representation
+    analyze_matrix(board_rep, board_state)
+
+
+"""Given a board_state, run the single point solver. This consists of checking
+ whether given the surrounding mine count of a tile, can we reveals known mines 
+ or bombs. We may flag tiles if the mine count == unopened tile count, and we
+ may open tiles if the mine count == flagged count"""
+
+
+def SP_solver(board_state):
+    # mark known mines and open known tiles
+    col_size = len(board_state[0])
+    row_size = len(board_state)
+    for r in range(row_size):
+        for c in range(col_size):
+            mine_count = board_state[r][c]
+            unopened_tiles = []
+            flaged_tiles = []
+            if mine_count > 0:
+                for i, j in coordinates:
+                    if (
+                        r + i >= 0
+                        and j + c >= 0
+                        and j + c < col_size
+                        and r + i < row_size
+                    ):
+                        if board_state[r + i][j + c] == -1:
+                            unopened_tiles.append((r + i, j + c))
+                        elif board_state[r + i][j + c] == -2:
+                            flaged_tiles.append((r + i, j + c))
+                if len(flaged_tiles) == mine_count:
+                    for x, y in unopened_tiles:
+                        queue.append(("open", x, y))
+                        empty.add((x, y))
+                elif len(unopened_tiles) + len(flaged_tiles) == mine_count:
+                    for x, y in unopened_tiles:
+                        queue.append(("flag", x, y))
+                        mines.add((x, y))
+
+
+"""Given a board_state, choose a random unopened tile """
+
+
+def random_move(board_state):
+    unopened = np.argwhere(board_state == -1)
+    index = np.random.choice(len(unopened))
+    r, c = unopened[index][0], unopened[index][1]
+    empty.add((r, c))
+    print("random!")
+    return ("open", r, c)
+
+
 """Given a board_state and bomb_count, output the tile with the lowest probability """
 
 
@@ -116,34 +180,28 @@ def ai_heuristic_logic(board_state, first_move, bomb_count):
     if queue:
         return queue.popleft()
 
-    # create a matrix representation of the board_state
-    board_rep = to_matrix(board_state)
-
-    # row reduce the board representation
-    board_rep = Matrix(board_rep)
-    board_rep.rref()
-
-    # determine flag and move operations from the row reduced board representation
-    analyze_matrix(board_rep, board_state)
+    # certain_move shows how we developed the AI's certain move strategy
+    # 0 is the basic strategy where it makes a move based on information at a single point
+    # 1 takes into account all the information we know and creates a constraint satisfaction problem
+    certain_move = 0
+    if certain_move == 0:
+        SP_solver(board_state)
+    elif certain_move == 1:
+        CSP_solver(board_state)
 
     # If trivial move was found, make trivial move
     if queue:
         return queue.popleft()
 
-    # test iteration shows how we added new features to the AI
-    # 0 is the basic AI where it makes a random move if there are no certain moves
+    # uncertain_move shows how we developed the AI's uncertain move strategy
+    # 0 is the basic strategy where it makes a random move if there are no certain moves
     # 1 takes into account the probability of each tile and returns the one with lowest chance of being a mine
     # 2 adds a distance heuristic
-    test_iteration = 0
+    uncertain_move = 0
 
     # if no queue chose a random unopened tile
-    if test_iteration == 0:
-        unopened = np.argwhere(board_state == -1)
-        index = np.random.choice(len(unopened))
-        r, c = unopened[index][0], unopened[index][1]
-        empty.add((r, c))
-        print("random!")
-        return ("open", r, c)
-    else:
+    if uncertain_move == 0:
+        return random_move(board_state)
+    elif uncertain_move == 1:
         r, c = select_tile_with_lowest_probability(board_state, bomb_count)
         return ("open", r, c)

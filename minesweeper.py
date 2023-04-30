@@ -188,15 +188,9 @@ def printed_game_loop(mode, bomb_count, board_size):
 
 def trials():
     board_size = int(input("Enter board size: "))
-    input_difficulty = int(input("Enter difficulty (1: easy, 2: medium, 3: hard): "))
+    bomb_count = int(input("Enter bomb count: "))
     iterations = int(input("input number of trial iteration: "))
     count = iterations
-    if input_difficulty == 1:
-        bomb_count = int(0.10 * (board_size**2)) + 1
-    elif input_difficulty == 2:
-        bomb_count = int(0.15 * (board_size**2)) + 1
-    else:
-        bomb_count = int(0.25 * (board_size**2)) + 1
 
     start_time = time.time()
     win = 0
