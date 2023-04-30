@@ -14,7 +14,8 @@ def init_test_board(size, m_indices):
 
 
 # the change in tile for each of the 8 surrounding tiles
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
+               (0, 1), (1, -1), (1, 0), (1, 1)}
 
 
 def init_test_board_state(size, f_indices, o_indices, board):
@@ -200,7 +201,8 @@ class TestGameWon(unittest.TestCase):
     def game_game_won(self):
         m_indices = [(0, 0)]
         board = init_test_board(2, m_indices)
-        board_state = init_test_board_state(1, [], [(0, 1), (1, 0), (1, 1)], board)
+        board_state = init_test_board_state(
+            1, [], [(0, 1), (1, 0), (1, 1)], board)
         actual_val = minesweeper.game_won(board_state, 1)
         expected_val = True
         self.assertEqual(
@@ -345,4 +347,5 @@ class SampleGame(unittest.TestCase):
             )
 """
 
-unittest.main()
+if __name__ == "__main__":
+    unittest.main()
