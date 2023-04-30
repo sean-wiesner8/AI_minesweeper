@@ -139,12 +139,14 @@ def SP_solver(board_state):
                             flaged_tiles.append((r + i, j + c))
                 if len(flaged_tiles) == mine_count:
                     for x, y in unopened_tiles:
-                        queue.append(("open", x, y))
-                        empty.add((x, y))
+                        if (x, y) not in empty:
+                            queue.append(("open", x, y))
+                            empty.add((x, y))
                 elif len(unopened_tiles) + len(flaged_tiles) == mine_count:
                     for x, y in unopened_tiles:
-                        queue.append(("flag", x, y))
-                        mines.add((x, y))
+                        if (x, y) not in mines:
+                            queue.append(("flag", x, y))
+                            mines.add((x, y))
 
 
 """Given a board_state, choose a random unopened tile """
