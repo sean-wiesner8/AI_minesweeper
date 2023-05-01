@@ -2,6 +2,10 @@ import random
 import numpy as np
 import heuristic_model
 import time
+import sys
+
+# Raise recursion limit to avoid RecursionError on bigger boards
+sys.setrecursionlimit(2**16)
 
 # initalized after the first move, board represents the data hidden to the user.
 # Each board is a certain size and has a certain mine count
