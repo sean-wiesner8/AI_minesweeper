@@ -1,5 +1,6 @@
 import heuristic_model
 import minesweeper
+from heuristic_model import SP_solver, CSP_solver, ai_heuristic_logic
 import numpy as np
 import unittest
 from sympy import *
@@ -14,8 +15,7 @@ def init_test_board(size, m_indices):
 
 
 # the change in tile for each of the 8 surrounding tiles
-coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1),
-               (0, 1), (1, -1), (1, 0), (1, 1)}
+coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
 
 
 def init_test_board_state(size, f_indices, o_indices, board):
@@ -35,6 +35,34 @@ def init_test_board_state(size, f_indices, o_indices, board):
                 mine_count += 1
         board_state[i][j] = mine_count
     return board_state
+
+
+class TestSolvers(unittest.TestCase):
+    def test_SP_solver(self):
+        board_state = [[1, -1, 1, 0], [1, 2, -1, 0], [-1, 1, 1, 0], [1, 1, 1, 0]]
+        SP_solver(board_state)
+        ai_heuristic_logic(board_state, True, None)
+        self.assertEqual(ai_heuristic_logic(board_state, False, None), ("flag", 0, 1))
+        self.assertEqual(ai_heuristic_logic(board_state, False, None), ("flag", 1, 2))
+        self.assertEqual(ai_heuristic_logic(board_state, False, None), ("flag", 2, 0))
+
+    def test_CSP_solver(self):
+        board_state = [[1, -1, 1, 0], [1, 2, -1, 0], [-1, 1, 1, 0], [1, 1, 1, 0]]
+        CSP_solver(board_state)
+        ai_heuristic_logic(board_state, True, None)
+        self.assertEqual(ai_heuristic_logic(board_state, False, None), ("flag", 0, 1))
+        self.assertEqual(ai_heuristic_logic(board_state, False, None), ("flag", 1, 2))
+        self.assertEqual(ai_heuristic_logic(board_state, False, None), ("flag", 2, 0))
+
+    def test_simple_board(self):
+        board_state = [[0, 0, 0, 0], [0, 1, -1, 1], [0, 1, 1, 1], [0, 0, 0, 0]]
+        SP_solver(board_state)
+        ai_heuristic_logic(board_state, True, None)
+        self.assertEqual(ai_heuristic_logic(board_state, False, None), ("flag", 1, 2))
+
+        CSP_solver(board_state)
+        ai_heuristic_logic(board_state, True, None)
+        self.assertEqual(ai_heuristic_logic(board_state, False, None), ("flag", 1, 2))
 
 
 class TestInitBoard(unittest.TestCase):
@@ -201,8 +229,7 @@ class TestGameWon(unittest.TestCase):
     def game_game_won(self):
         m_indices = [(0, 0)]
         board = init_test_board(2, m_indices)
-        board_state = init_test_board_state(
-            1, [], [(0, 1), (1, 0), (1, 1)], board)
+        board_state = init_test_board_state(1, [], [(0, 1), (1, 0), (1, 1)], board)
         actual_val = minesweeper.game_won(board_state, 1)
         expected_val = True
         self.assertEqual(
@@ -310,6 +337,74 @@ class TestAIHeuristicLogic(unittest.TestCase):
                 expected_val.popleft(),
                 f"expected {expected_val} but got {actual_val}",
             )
+
+
+# This test case checks if the open_tile function behaves correctly when
+# there are no bombs on the board. It initializes a 10x10 board with no bombs
+# and opens the tile at position (0, 9). The expected outcome is that all tiles
+# on the board will be opened (zeros in the board state).
+class TestOpenTileNoBombsDiagonal(unittest.TestCase):
+    def test_open_tile_no_bombs_diagonal(self):
+        board = init_test_board(10, [])
+        board_state = init_test_board_state(10, [], [], board)
+        actual_val = minesweeper.open_tile(board_state, board, 0, 9)
+        expected_val = np.zeros((10, 10))
+        self.assertTrue(
+            (actual_val == expected_val).all(),
+            f"expected {expected_val} but got {actual_val}",
+        )
+
+
+# This test case checks the behavior of the open_tile function when opening
+# an edge tile surrounded by bombs. The test initializes a 10x10 board with bombs
+# at positions (0, 1), (1, 0), and (1, 1). The tile at position (0, 0) is opened,
+# and the expected result is a board state where the tile (0, 0) shows the number
+# of surrounding bombs (which is 3 in this case).
+class TestOpenTileEdge(unittest.TestCase):
+    def test_open_tile_edge(self):
+        m_indices = [(0, 1), (1, 0), (1, 1)]
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
+        actual_val = minesweeper.open_tile(board_state, board, 0, 0)
+        expected_val = board_state.copy()
+        expected_val[0][0] = 3
+        self.assertTrue(
+            (actual_val == expected_val).all(),
+            f"expected {expected_val} but got {actual_val}",
+        )
+
+
+# This test case verifies if the flag_tile function works as expected for an edge
+# tile. It initializes a 10x10 board with a bomb at position (0, 1). The test flags
+# the tile at position (0, 1) and expects the board state to show a flag at the
+# specified position.
+class TestFlagTileEdge(unittest.TestCase):
+    def test_flag_tile_edge(self):
+        m_indices = [(0, 1)]
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
+        actual_val = minesweeper.flag_tile(board_state, 0, 1)
+        expected_val = init_test_board_state(10, [(0, 1)], [], board)
+        self.assertTrue(
+            (actual_val == expected_val).all(),
+            f"expected {expected_val} but got {actual_val}",
+        )
+
+
+# This test case tests the count_surrounding_bombs function to ensure it
+# correctly counts the number of bombs surrounding a corner tile. The test
+# initializes a 10x10 board with bombs at positions (0, 1), (1, 0), and (1, 1).
+# The function is called for the tile at position (0, 0), and the expected result
+# is the correct count of surrounding bombs, which is 3 in this case.
+class TestCountSurroundingBombsCorner(unittest.TestCase):
+    def test_count_surrounding_bombs_corner(self):
+        m_indices = [(0, 1), (1, 0), (1, 1)]
+        board = init_test_board(10, m_indices)
+        actual_val = minesweeper.count_surrounding_bombs(board, 0, 0)
+        expected_val = 3
+        self.assertEqual(
+            actual_val, expected_val, f"expected {expected_val} but got {actual_val}"
+        )
 
 
 """
