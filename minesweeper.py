@@ -27,8 +27,8 @@ coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1,
 does not allow a bomb to be initated at (r,c)"""
 
 
-def init_board(board_width, board_height, mine, r, c):
-    board = np.zeros((board_width, board_height))
+def init_board(board_height, board_width, mine, r, c):
+    board = np.zeros((board_height, board_width))
     first_move = r * board_width + c
     left = list(range(0, first_move))
     right = list(range(first_move + 1, board_width * board_height))
@@ -40,8 +40,8 @@ def init_board(board_width, board_height, mine, r, c):
 """initalize minesweeper with a [size] x [size] board state where all tiles are unopened"""
 
 
-def init_board_state(board_width, board_height):
-    board_state = np.full((board_width, board_height), unopened)
+def init_board_state(board_height, board_width):
+    board_state = np.full((board_height, board_width), unopened)
     return board_state
 
 
@@ -143,9 +143,9 @@ def print_board(board, board_state):
 """game loop for minesweeper game mode."""
 
 
-def printed_game_loop(mode, bomb_count, board_width, board_height):
-    board = np.zeros((board_width, board_height))
-    board_state = init_board_state(board_width, board_height)
+def printed_game_loop(mode, bomb_count, board_height, board_width):
+    board = np.zeros((board_height, board_width))
+    board_state = init_board_state(board_height, board_width)
     move_count = 0
     first_move = True
     while not game_won(board_state, bomb_count) and not game_lost(board, board_state):
@@ -170,7 +170,7 @@ def printed_game_loop(mode, bomb_count, board_width, board_height):
             )
         if opp == "open":
             if first_move:
-                board = init_board(board_width, board_height, bomb_count, r, c)
+                board = init_board(board_height, board_width, bomb_count, r, c)
                 first_move = False
             board_state = open_tile(board_state, board, r, c)
         if opp == "flag":
@@ -200,7 +200,7 @@ def trials():
     start_time = time.time()
     win = 0
     while iterations > 0:
-        if printed_game_loop("ai", bomb_count, board_width, board_height):
+        if printed_game_loop("ai", bomb_count, board_height, board_width):
             win += 1
         iterations -= 1
     end_time = time.time()
