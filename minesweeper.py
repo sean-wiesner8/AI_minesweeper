@@ -27,11 +27,11 @@ coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1,
 does not allow a bomb to be initated at (r,c)"""
 
 
-def init_board(board_height, board_width, mine, r, c):
-    board = np.zeros((board_height, board_width))
-    first_move = r * board_width + c
+def init_board(size, mine, r, c):
+    board = np.zeros((size, size))
+    first_move = r * size + c
     left = list(range(0, first_move))
-    right = list(range(first_move + 1, board_width * board_height))
+    right = list(range(first_move + 1, np.square(size)))
     bombs = random.sample(left + right, mine)
     board[np.unravel_index(bombs, board.shape)] = 1
     return board
@@ -40,8 +40,8 @@ def init_board(board_height, board_width, mine, r, c):
 """initalize minesweeper with a [size] x [size] board state where all tiles are unopened"""
 
 
-def init_board_state(board_height, board_width):
-    board_state = np.full((board_height, board_width), unopened)
+def init_board_state(size):
+    board_state = np.full((size, size), unopened)
     return board_state
 
 
@@ -87,9 +87,9 @@ def count_surrounding_bombs(board, row, col):
             and col + c >= 0
             and row + r < len(board)
             and col + c < len(board[0])
-            and board[row + r][col + c] == mine
         ):
-            count += 1
+            if board[row + r][col + c] == mine:
+                count += 1
     return count
 
 
@@ -143,9 +143,9 @@ def print_board(board, board_state):
 """game loop for minesweeper game mode."""
 
 
-def printed_game_loop(mode, bomb_count, board_height, board_width):
-    board = np.zeros((board_height, board_width))
-    board_state = init_board_state(board_height, board_width)
+def printed_game_loop(mode, bomb_count, board_size):
+    board = np.zeros((board_size, board_size))
+    board_state = init_board_state(board_size)
     move_count = 0
     first_move = True
     while not game_won(board_state, bomb_count) and not game_lost(board, board_state):
@@ -161,7 +161,7 @@ def printed_game_loop(mode, bomb_count, board_height, board_width):
                 opp = read_split[0]
                 r = int(read_split[1])
                 c = int(read_split[2])
-                if r < 0 or c < 0 or r >= board_height or c >= board_height:
+                if r < 0 or c < 0 or r >= board_size or c >= board_size:
                     print("Out of bounds")
                     continue
         else:
@@ -170,7 +170,7 @@ def printed_game_loop(mode, bomb_count, board_height, board_width):
             )
         if opp == "open":
             if first_move:
-                board = init_board(board_height, board_width, bomb_count, r, c)
+                board = init_board(board_size, bomb_count, r, c)
                 first_move = False
             board_state = open_tile(board_state, board, r, c)
         if opp == "flag":
@@ -191,8 +191,7 @@ def printed_game_loop(mode, bomb_count, board_height, board_width):
 
 
 def trials():
-    board_width = int(input("Enter board width: "))
-    board_height = int(input("Enter board height: "))
+    board_size = int(input("Enter board size: "))
     bomb_count = int(input("Enter bomb count: "))
     iterations = int(input("input number of trial iteration: "))
     count = iterations
@@ -200,7 +199,7 @@ def trials():
     start_time = time.time()
     win = 0
     while iterations > 0:
-        if printed_game_loop("ai", bomb_count, board_height, board_width):
+        if printed_game_loop("ai", bomb_count, board_size):
             win += 1
         iterations -= 1
     end_time = time.time()

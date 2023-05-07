@@ -25,7 +25,7 @@ the amount of surrounding mines if the tile has been opened."""
 
 
 def to_matrix(board_state):
-    tile_count = len(board_state) ** 2
+    tile_count = len(board_state) * len(board_state[0])
     board_rep = np.zeros((tile_count, tile_count + 1))
     col_size = len(board_state[0])
     row_size = len(board_state)
@@ -63,7 +63,7 @@ the AI knowledge base (the sets mines and empty) should be updated."""
 
 
 def analyze_matrix(board_rep, board_state):
-    tile_count = len(board_state) ** 2
+    tile_count = len(board_state) * len(board_state[0])
     for r in range(tile_count):
         maximum = 0
         minimum = 0
@@ -164,6 +164,7 @@ def random_move(board_state):
 If there is a conflict when assigning a local probability, assign the the highest probability
 to that tile """
 
+
 def select_tile_with_lowest_local_probability(board_state, bomb_count):
     col_size = len(board_state[0])
     row_size = len(board_state)
@@ -188,11 +189,15 @@ def select_tile_with_lowest_local_probability(board_state, bomb_count):
                         elif board_state[r + i][j + c] == -2:
                             flaged_tiles.append((r + i, j + c))
                         mine_count = mine_count - len(flaged_tiles)
-                        if(mine_count > 0):
-                            for x,y in unopened_tiles:
-                                if local_probabilites[x][y]:  
-                                    local_probabilites[x][y] = mine_count/len(unopened_tiles)
-    return np.unravel_index(np.argmin(local_probabilites, axis=None), local_probabilites.shape)
+                        if mine_count > 0:
+                            for x, y in unopened_tiles:
+                                if local_probabilites[x][y]:
+                                    local_probabilites[x][y] = mine_count / len(
+                                        unopened_tiles
+                                    )
+    return np.unravel_index(
+        np.argmin(local_probabilites, axis=None), local_probabilites.shape
+    )
 
 
 """Given a board_state and bomb_count, output the tile with the lowest probability """
@@ -233,11 +238,11 @@ def ai_heuristic_logic(board_state, first_move, bomb_count):
     # 0 is the basic strategy where it makes a random move if there are no certain moves
     # 1 takes into account the locaal probability of each tile and returns the one with lowest chance of being a mine
     # 2 adds a distance heuristic
-    uncertain_move = 1
+    uncertain_move = 0
 
     # if no queue chose a random unopened tile
     if uncertain_move == 0:
         return random_move(board_state)
     elif uncertain_move == 1:
-        r, c = select_tile_with_lowest_local_probability(board_state,bomb_count)
+        r, c = select_tile_with_lowest_local_probability(board_state, bomb_count)
         return ("open", r, c)
