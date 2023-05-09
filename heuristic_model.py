@@ -191,10 +191,9 @@ def select_tile_with_lowest_local_probability(board_state, bomb_count):
                         mine_count = mine_count - len(flaged_tiles)
                         if mine_count > 0:
                             for x, y in unopened_tiles:
-                                if local_probabilites[x][y]:
-                                    local_probabilites[x][y] = mine_count / len(
-                                        unopened_tiles
-                                    )
+                                lr =  mine_count / len(unopened_tiles)
+                                if local_probabilites[x][y] != 1 and lr > local_probabilites[x][y]:
+                                    local_probabilites[x][y] = lr
     return np.unravel_index(
         np.argmin(local_probabilites, axis=None), local_probabilites.shape
     )
@@ -238,7 +237,7 @@ def ai_heuristic_logic(board_state, first_move, bomb_count):
     # 0 is the basic strategy where it makes a random move if there are no certain moves
     # 1 takes into account the locaal probability of each tile and returns the one with lowest chance of being a mine
     # 2 adds a distance heuristic
-    uncertain_move = 0
+    uncertain_move = 1
 
     # if no queue chose a random unopened tile
     if uncertain_move == 0:
