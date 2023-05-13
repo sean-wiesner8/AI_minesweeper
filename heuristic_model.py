@@ -196,8 +196,7 @@ def select_tile_with_lowest_local_probability(board_state, bomb_count):
                         lp =  mine_count / len(unopened_tiles)
                         if local_probabilites[x][y] == 1 or lp > local_probabilites[x][y]:
                             local_probabilites[x][y] = lp
-    print(local_probabilites)
-    
+
     #the amount of bombs in the unknown set
     unknown_set_count = np.sum(local_probabilites[local_probabilites ==1])
     
@@ -260,7 +259,7 @@ def ai_heuristic_logic(board_state, first_move, bomb_count):
     # 0 is the basic strategy where it makes a random move if there are no certain moves
     # 1 takes into account the locaal probability of each tile and returns the one with lowest chance of being a mine
     # 2 adds a distance heuristic
-    uncertain_move = 0
+    uncertain_move = 1
 
     # if no queue chose a random unopened tile
     if uncertain_move == 0:
