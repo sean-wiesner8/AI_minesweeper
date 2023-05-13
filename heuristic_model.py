@@ -168,7 +168,9 @@ to that tile """
 def select_tile_with_lowest_local_probability(board_state, bomb_count):
     col_size = len(board_state[0])
     row_size = len(board_state)
-    local_probabilites = np.ones_like(board_state)
+    local_probabilites = np.ones_like(board_state).astype(float)
+    #find the probability of all the mines in the frontier set
+    #if there is a conflicting probability, assign the highest local probability
     for r in range(row_size):
         for c in range(col_size):
             mine_count = board_state[r][c]
@@ -188,15 +190,36 @@ def select_tile_with_lowest_local_probability(board_state, bomb_count):
                             unopened_tiles.append((r + i, j + c))
                         elif board_state[r + i][j + c] == -2:
                             flaged_tiles.append((r + i, j + c))
-                        mine_count = mine_count - len(flaged_tiles)
-                        if mine_count > 0:
-                            for x, y in unopened_tiles:
-                                lr =  mine_count / len(unopened_tiles)
-                                if local_probabilites[x][y] != 1 and lr > local_probabilites[x][y]:
-                                    local_probabilites[x][y] = lr
-    return np.unravel_index(
-        np.argmin(local_probabilites, axis=None), local_probabilites.shape
-    )
+                mine_count = mine_count - len(flaged_tiles)
+                if mine_count > 0:
+                    for x, y in unopened_tiles:
+                        lp =  mine_count / len(unopened_tiles)
+                        if local_probabilites[x][y] == 1 or lp > local_probabilites[x][y]:
+                            local_probabilites[x][y] = lp
+    print(local_probabilites)
+    
+    #the amount of bombs in the unknown set
+    unknown_set_count = np.sum(local_probabilites[local_probabilites ==1])
+    
+    # we are considering the unkown set for selection because it is not always the best to select from the frontier 
+    if(unknown_set_count > 0):
+        #by the linearity of expectation - we can estimate the amount of bombs in the frontier set
+        frontier_set_expected_mines = np.sum(local_probabilites[local_probabilites<1])
+        #probability of any tile in the unkown set being a mine
+        unexplored_probabilites = (bomb_count - frontier_set_expected_mines - np.count_nonzero(board_state[board_state==-2])) / unknown_set_count
+        #set all tiles in the unkown set to the same probability
+        local_probabilites[local_probabilites == 1] = unexplored_probabilites
+
+    #find lowest probabiltiy
+    lowest_probability = np.amin(local_probabilites)
+
+    #find all indices lowest probability
+    indices = np.argwhere(local_probabilites == lowest_probability)
+    
+    #find a random tile out of all of the lowest probability tiles
+    select = np.random.randint(0, len(indices))
+
+    return indices[select][0], indices[select][1]
 
 
 """Given a board_state and bomb_count, output the tile with the lowest probability """
@@ -237,7 +260,7 @@ def ai_heuristic_logic(board_state, first_move, bomb_count):
     # 0 is the basic strategy where it makes a random move if there are no certain moves
     # 1 takes into account the locaal probability of each tile and returns the one with lowest chance of being a mine
     # 2 adds a distance heuristic
-    uncertain_move = 1
+    uncertain_move = 0
 
     # if no queue chose a random unopened tile
     if uncertain_move == 0:
