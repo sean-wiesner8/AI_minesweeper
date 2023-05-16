@@ -7,8 +7,8 @@ from sympy import *
 from collections import deque
 
 
-def init_test_board(board_width, board_height, m_indices):
-    init_board = np.zeros((board_width, board_height))
+def init_test_board(size, m_indices):
+    init_board = np.zeros((size, size))
     for i, j in m_indices:
         init_board[i][j] = 1
     return init_board
@@ -18,8 +18,8 @@ def init_test_board(board_width, board_height, m_indices):
 coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)}
 
 
-def init_test_board_state(board_width, board_height, f_indices, o_indices, board):
-    board_state = minesweeper.init_board_state(board_width, board_height)
+def init_test_board_state(size, f_indices, o_indices, board):
+    board_state = minesweeper.init_board_state(size)
     for i, j in f_indices:
         board_state[i][j] = -2
     for i, j in o_indices:
@@ -40,7 +40,7 @@ def init_test_board_state(board_width, board_height, f_indices, o_indices, board
 class TestInitBoard(unittest.TestCase):
     def test_init_board_10(self):
         for _ in range(100):
-            init_board = minesweeper.init_board(10, 10, 3, 4, 4)
+            init_board = minesweeper.init_board(10, 3, 4, 4)
             unique, counts = np.unique(init_board, return_counts=True)
             counter = dict(zip(unique, counts))
             self.assertEqual(
@@ -51,7 +51,7 @@ class TestInitBoard(unittest.TestCase):
 
 class TestInitBoardState(unittest.TestCase):
     def test_init_board_state(self):
-        init_board_state = minesweeper.init_board_state(5, 5)
+        init_board_state = minesweeper.init_board_state(5)
         self.assertEqual(
             init_board_state.shape,
             (5, 5),
@@ -67,9 +67,9 @@ class TestInitBoardState(unittest.TestCase):
 class TestOpenTile(unittest.TestCase):
     def test_open_tile_flagged(self):
         m_indices = [(0, 0)]
-        board = init_test_board(10, 10, m_indices)
+        board = init_test_board(10, m_indices)
         f_indices = [(0, 0)]
-        board_state = init_test_board_state(10, 10, f_indices, [], board)
+        board_state = init_test_board_state(10, f_indices, [], board)
         actual_val = minesweeper.open_tile(board_state, board, 0, 0)
         expected_val = board_state
         self.assertTrue(
@@ -79,8 +79,8 @@ class TestOpenTile(unittest.TestCase):
 
     def test_open_tile_bomb(self):
         m_indices = [(5, 5)]
-        board = init_test_board(10, 10, m_indices)
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
         actual_val = minesweeper.open_tile(board_state, board, 5, 5)
         expected_val = board_state.copy()
         self.assertTrue(
@@ -90,8 +90,8 @@ class TestOpenTile(unittest.TestCase):
 
     def test_open_tile_bomb_nearby(self):
         m_indices = [(4, 4)]
-        board = init_test_board(10, 10, m_indices)
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
         actual_val = minesweeper.open_tile(board_state, board, 5, 5)
         expected_val = board_state.copy()
         expected_val[5][5] = 1
@@ -101,8 +101,8 @@ class TestOpenTile(unittest.TestCase):
         )
 
     def test_open_tile_no_bombs(self):
-        board = init_test_board(10, 10, [])
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, [])
+        board_state = init_test_board_state(10, [], [], board)
         actual_val = minesweeper.open_tile(board_state, board, 5, 5)
         expected_val = np.zeros((10, 10))
         self.assertTrue(
@@ -114,10 +114,10 @@ class TestOpenTile(unittest.TestCase):
 class TestFlagTile(unittest.TestCase):
     def test_flag_tile(self):
         m_indices = [(4, 4)]
-        board = init_test_board(10, 10, m_indices)
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
         actual_val = minesweeper.flag_tile(board_state, 4, 4)
-        expected_val = init_test_board_state(10, 10, m_indices, [], board)
+        expected_val = init_test_board_state(10, m_indices, [], board)
         self.assertTrue(
             (actual_val == expected_val).all(),
             f"expected {expected_val} but got {actual_val}",
@@ -125,8 +125,8 @@ class TestFlagTile(unittest.TestCase):
 
     def test_unflag_tile(self):
         m_indices = [(4, 4)]
-        board = init_test_board(10, 10, m_indices)
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
         flag_state = minesweeper.flag_tile(board_state, 4, 4)
         actual_val = minesweeper.flag_tile(board_state, 4, 4)
         expected_val = board_state
@@ -139,7 +139,7 @@ class TestFlagTile(unittest.TestCase):
 class TestCountSurroundingBombs(unittest.TestCase):
     def test_count_surrounding_bombs_simple(self):
         m_indices = [(0, 0), (6, 6), (4, 5), (5, 6)]
-        board = init_test_board(10, 10, m_indices)
+        board = init_test_board(10, m_indices)
         actual_val = minesweeper.count_surrounding_bombs(board, 5, 5)
         expected_val = 3
         self.assertEqual(
@@ -148,7 +148,7 @@ class TestCountSurroundingBombs(unittest.TestCase):
 
     def test_count_surrounding_bombs_none(self):
         m_indices = [(0, 0), (6, 6), (4, 5), (5, 6)]
-        board = init_test_board(10, 10, m_indices)
+        board = init_test_board(10, m_indices)
         actual_val2 = minesweeper.count_surrounding_bombs(board, 2, 2)
         expected_val2 = 0
         self.assertEqual(
@@ -159,7 +159,7 @@ class TestCountSurroundingBombs(unittest.TestCase):
 
     def test_count_surrounding_bombs_edge(self):
         m_indices = [(0, 0), (6, 6), (4, 5), (5, 6)]
-        board = init_test_board(10, 10, m_indices)
+        board = init_test_board(10, m_indices)
         actual_val3 = minesweeper.count_surrounding_bombs(board, 1, 0)
         expected_val3 = 1
         self.assertEqual(
@@ -172,8 +172,8 @@ class TestCountSurroundingBombs(unittest.TestCase):
 class TestGameLost(unittest.TestCase):
     def test_game_lost(self):
         m_indices = [(4, 4)]
-        board = init_test_board(10, 10, m_indices)
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
         lost_board_state = minesweeper.open_tile(board_state, board, 4, 4)
         actual_val = minesweeper.game_lost(board, lost_board_state)
         expected_val = True
@@ -185,8 +185,8 @@ class TestGameLost(unittest.TestCase):
 
     def test_game_not_lost(self):
         m_indices = [(4, 4)]
-        board = init_test_board(10, 10, m_indices)
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
         not_lost_board_state = minesweeper.open_tile(board_state, board, 4, 5)
         actual_val = minesweeper.game_lost(board, not_lost_board_state)
         expected_val = False
@@ -200,8 +200,8 @@ class TestGameLost(unittest.TestCase):
 class TestGameWon(unittest.TestCase):
     def game_game_won(self):
         m_indices = [(0, 0)]
-        board = init_test_board(2, 2, m_indices)
-        board_state = init_test_board_state(1, 1, [], [(0, 1), (1, 0), (1, 1)], board)
+        board = init_test_board(2, m_indices)
+        board_state = init_test_board_state(1, [], [(0, 1), (1, 0), (1, 1)], board)
         actual_val = minesweeper.game_won(board_state, 1)
         expected_val = True
         self.assertEqual(
@@ -212,8 +212,8 @@ class TestGameWon(unittest.TestCase):
 
     def game_not_won(self):
         m_indices = [(4, 4)]
-        board = init_test_board(10, 10, m_indices)
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
         actual_val = minesweeper.game_won(board_state, 1)
         expected_val = False
         self.assertEqual(
@@ -226,8 +226,8 @@ class TestGameWon(unittest.TestCase):
 class TestAIHeuristicLogic(unittest.TestCase):
     def test_to_matrix_all_unopened(self):
         m_indices = [(4, 4)]
-        board = init_test_board(10, 10, m_indices)
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
         actual_val = heuristic_model.to_matrix(board_state)
         tile_count = len(board_state) ** 2
         expected_val = np.zeros((tile_count, tile_count + 1))
@@ -238,8 +238,8 @@ class TestAIHeuristicLogic(unittest.TestCase):
 
     def test_to_matrix_one_opened(self):
         m_indices = [(0, 0)]
-        board = init_test_board(2, 2, m_indices)
-        board_state = init_test_board_state(2, 2, [], [], board)
+        board = init_test_board(2, m_indices)
+        board_state = init_test_board_state(2, [], [], board)
         board_state = minesweeper.open_tile(board_state, board, 1, 1)
         actual_val = heuristic_model.to_matrix(board_state)
         tile_count = len(board_state) ** 2
@@ -255,8 +255,8 @@ class TestAIHeuristicLogic(unittest.TestCase):
 
     def test_to_matrix_all_but_1(self):
         m_indices = [(0, 0)]
-        board = init_test_board(2, 2, m_indices)
-        board_state = init_test_board_state(2, 2, [], [], board)
+        board = init_test_board(2, m_indices)
+        board_state = init_test_board_state(2, [], [], board)
         board_state = minesweeper.open_tile(board_state, board, 0, 1)
         board_state = minesweeper.open_tile(board_state, board, 1, 0)
         board_state = minesweeper.open_tile(board_state, board, 1, 1)
@@ -276,11 +276,12 @@ class TestAIHeuristicLogic(unittest.TestCase):
 
     def test_analyze_matrix_all_unopened(self):
         m_indices = [(0, 0)]
-        board = init_test_board(2, 2, m_indices)
-        board_state = init_test_board_state(2, 2, [], [], board)
+        board = init_test_board(2, m_indices)
+        board_state = init_test_board_state(2, [], [], board)
         board_state = minesweeper.open_tile(board_state, board, 0, 1)
         board_state = minesweeper.open_tile(board_state, board, 1, 0)
         board_state = minesweeper.open_tile(board_state, board, 1, 1)
+        actual_val = heuristic_model.to_matrix(board_state)
         board_rep = Matrix(board_rep)
         board_rep.rref()
         actual_val = heuristic_model.analyze_matrix(board_rep, board_state)
@@ -295,8 +296,8 @@ class TestAIHeuristicLogic(unittest.TestCase):
 
     def test_analyze_matrix_all_unopened(self):
         m_indices = [(4, 4)]
-        board = init_test_board(10, 10, m_indices)
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
         board_rep = heuristic_model.to_matrix(board_state)
         board_rep = Matrix(board_rep)
         board_rep.rref()
@@ -316,8 +317,8 @@ class TestAIHeuristicLogic(unittest.TestCase):
 # on the board will be opened (zeros in the board state).
 class TestOpenTileNoBombsDiagonal(unittest.TestCase):
     def test_open_tile_no_bombs_diagonal(self):
-        board = init_test_board(10, 10, [])
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, [])
+        board_state = init_test_board_state(10, [], [], board)
         actual_val = minesweeper.open_tile(board_state, board, 0, 9)
         expected_val = np.zeros((10, 10))
         self.assertTrue(
@@ -334,8 +335,8 @@ class TestOpenTileNoBombsDiagonal(unittest.TestCase):
 class TestOpenTileEdge(unittest.TestCase):
     def test_open_tile_edge(self):
         m_indices = [(0, 1), (1, 0), (1, 1)]
-        board = init_test_board(10, 10, m_indices)
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
         actual_val = minesweeper.open_tile(board_state, board, 0, 0)
         expected_val = board_state.copy()
         expected_val[0][0] = 3
@@ -352,10 +353,10 @@ class TestOpenTileEdge(unittest.TestCase):
 class TestFlagTileEdge(unittest.TestCase):
     def test_flag_tile_edge(self):
         m_indices = [(0, 1)]
-        board = init_test_board(10, 10, m_indices)
-        board_state = init_test_board_state(10, 10, [], [], board)
+        board = init_test_board(10, m_indices)
+        board_state = init_test_board_state(10, [], [], board)
         actual_val = minesweeper.flag_tile(board_state, 0, 1)
-        expected_val = init_test_board_state(10, 10, [(0, 1)], [], board)
+        expected_val = init_test_board_state(10, [(0, 1)], [], board)
         self.assertTrue(
             (actual_val == expected_val).all(),
             f"expected {expected_val} but got {actual_val}",
@@ -370,7 +371,7 @@ class TestFlagTileEdge(unittest.TestCase):
 class TestCountSurroundingBombsCorner(unittest.TestCase):
     def test_count_surrounding_bombs_corner(self):
         m_indices = [(0, 1), (1, 0), (1, 1)]
-        board = init_test_board(10, 10, m_indices)
+        board = init_test_board(10, m_indices)
         actual_val = minesweeper.count_surrounding_bombs(board, 0, 0)
         expected_val = 3
         self.assertEqual(
