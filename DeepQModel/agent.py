@@ -87,12 +87,13 @@ def select_action(state):
             # found, so we pick action with the larger expected reward.
             return policy_net(state).max(1)[1].view(1, 1)
     else:
+        #TODO: modify this so it does the same thing for my model
         return torch.tensor([[env.action_space.sample()]], device=device, dtype=torch.long)
 
 
 episode_durations = []
 
-#TODO: revise the plot to be personal to our project
+#TODO 4: revise the plot to be personal to our project
 def plot_durations(show_result=False):
     plt.figure(1)
     durations_t = torch.tensor(episode_durations, dtype=torch.float)
@@ -164,14 +165,14 @@ def optimize_model():
     # In-place gradient clipping
     torch.nn.utils.clip_grad_value_(policy_net.parameters(), 100)
     optimizer.step()
-
+#TODO 5: potentially change the number of episodes
 if torch.cuda.is_available():
     num_episodes = 600
 else:
     num_episodes = 50
 
 for i_episode in range(num_episodes):
-    # Initialize the environment and get it's state
+    #TODO 6: edit action selection code from lines 175 - 186
     state, info = env.reset()
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     for t in count():
@@ -211,6 +212,10 @@ print('Complete')
 plot_durations(show_result=True)
 plt.ioff()
 plt.show()
+
+#TODO 7: save model and load it somewhere else
+
+
 
 
 
