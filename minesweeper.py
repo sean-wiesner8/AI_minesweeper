@@ -11,7 +11,6 @@ sys.setrecursionlimit(2**16)
 # Each board is a certain size and has a certain mine count
 # board constants
 mine = 1
-empty_tile = 0
 
 # initalized at the begining of the game, board state represents the data the
 # user can see.
