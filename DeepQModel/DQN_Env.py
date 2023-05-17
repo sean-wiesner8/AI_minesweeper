@@ -13,4 +13,6 @@ class DQEnvironment(object):
         self.init_board_state = minesweeper.open_tile(minesweeper.init_board_state(board_size), self.board, first_r, first_c)
         #TODO Initialize other fields like rewards. There are probably others that I'm not aware of right now
 
+    
+
 
