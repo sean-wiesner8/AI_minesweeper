@@ -6,7 +6,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 import math
 
-
 import torch
 import torch.optim as optim
 import torch.nn as nn
@@ -221,6 +220,8 @@ for i_episode in range(num_episodes):
             episode_durations.append(t + 1)
             plot_durations()
             break
+        
+torch.save(policy_net.state_dict(), 'trained_model/model.pt')
 
 print('Complete')
 plot_durations(show_result=True)
