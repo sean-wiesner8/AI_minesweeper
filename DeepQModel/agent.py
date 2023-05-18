@@ -179,6 +179,7 @@ for i_episode in range(num_episodes):
     print(f"episode #{i_episode}")
     #TODO 6: edit action selection code from lines 175 - 186
     env.reset()
+    state = env.board_state
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     for t in count():
         action = select_action(state)
