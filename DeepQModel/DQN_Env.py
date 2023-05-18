@@ -13,9 +13,7 @@ class DQEnvironment(object):
         first_r = random.randint(1, board_size - 1)
         first_c = random.randint(1, board_size - 1)
         self.board = np.zeros((board_size, board_size))
-        self.init_board_state = minesweeper.open_tile(
-            minesweeper.init_board_state(board_size), self.board, first_r, first_c
-        )
+        self.board_state = np.zeros((board_size, board_size))
         self.rewards = {
             "win": 1,
             "lose": -0.5,
@@ -103,6 +101,6 @@ class DQEnvironment(object):
         self.board = minesweeper.init_board(
             self.board_size, self.bomb_count, first_r, first_c
         )
-        self.init_board_state = minesweeper.open_tile(
+        self.board_state = minesweeper.open_tile(
             minesweeper.init_board_state(self.board_size), self.board, first_r, first_c
         )
