@@ -227,6 +227,26 @@ plot_durations(show_result=True)
 plt.ioff()
 plt.show()
 
+env.reset()
+opened_list = []
+for iter in range(100):
+    env.reset()
+    for t in count():
+        input_val = env.board_state.flatten('C')
+        state = state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
+        action = policy_net(state).max(1)[1].view(1, 1)
+        board_state, reward, done = env.step(action.item())
+        if done:
+            opened = 0
+            for r in range(env.board_size):
+                for c in range(env.board_size):
+                    if env.board_state[r][c] in range(0, 9):
+                        opened += 1
+            opened_list.append(opened)
+print(sum(opened_list) / 100)
+            
+        
+
 
 
 
