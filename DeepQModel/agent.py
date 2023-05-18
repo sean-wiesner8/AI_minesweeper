@@ -1,6 +1,7 @@
 from collections import namedtuple, deque
 from itertools import count
 import random
+import time
 import gymnasium as gym
 import matplotlib
 import matplotlib.pyplot as plt
@@ -15,6 +16,7 @@ import network
 
 NUM_TILES = 22
 NUM_MINES = 99
+start_time = time.time()
 
 env = DQN_Env.DQEnvironment(NUM_MINES, NUM_TILES)
 
@@ -168,9 +170,9 @@ def optimize_model():
     optimizer.step()
 
 if torch.cuda.is_available():
-    num_episodes = 600
+    num_episodes = 20
 else:
-    num_episodes = 600
+    num_episodes = 20
 
 most_opened = 0
 for i_episode in range(num_episodes):
@@ -220,7 +222,8 @@ for i_episode in range(num_episodes):
             episode_durations.append(t + 1)
             plot_durations()
             break
-        
+end_time = time.time()
+print('Time took to train: ', end_time - start_time, ' seconds')
 torch.save(policy_net, 'trained_model/model2.pt')
 print('Complete')
 plot_durations(show_result=True)
@@ -229,11 +232,13 @@ plt.show()
 
 env.reset()
 opened_list = []
-for iter in range(100):
+num_data = 1
+for iter in range(num_data):
     env.reset()
-    for t in count():
+    done = False
+    while not done:
         input_val = env.board_state.flatten('C')
-        state = state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
+        state = torch.tensor(input_val, dtype=torch.float32, device=device).unsqueeze(0)
         action = policy_net(state).max(1)[1].view(1, 1)
         board_state, reward, done = env.step(action.item())
         if done:
@@ -243,7 +248,8 @@ for iter in range(100):
                     if env.board_state[r][c] in range(0, 9):
                         opened += 1
             opened_list.append(opened)
-print(sum(opened_list) / 100)
+            
+print('average number of mines opened', sum(opened_list) / num_data)
             
         
 
