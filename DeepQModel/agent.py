@@ -1,3 +1,5 @@
+import os
+
 from collections import namedtuple, deque
 from itertools import count
 import random
@@ -14,8 +16,13 @@ import torch.nn as nn
 import DQN_Env
 import network
 
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
+NUM_TILES = 22
+NUM_MINES = 99
+
 #TODO 1: initialize env
-env = gym.make("CartPole-v1")
+env = DQN_Env.DQEnvironment(NUM_MINES, NUM_TILES)
 
 is_ipython = 'inline' in matplotlib.get_backend()
 if is_ipython:
@@ -56,15 +63,12 @@ TAU = 0.005
 LR = 1e-4
 DENSE_CHANNELS = 512
 
-#TODO 2: define state variables, neural networks, and optimizer.
-n_actions = env.action_space.n
-state, info = env.reset()
+n_actions, n_observations = env.board_size, env.board_size
+env.reset()
 
-n_observations = len(state)
-
-#TODO 3: Replace the 128 with the actual parameter
-policy_net = network.DQN(n_observations, n_actions, 128).to(device)
-target_net = network.DQN(n_observations, n_actions, 128).to(device)
+#TODO: Choose the right optimizer
+policy_net = network.DQN(n_observations, n_actions, DENSE_CHANNELS).to(device)
+target_net = network.DQN(n_observations, n_actions, DENSE_CHANNELS).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 
 optimizer = optim.AdamW(policy_net.parameters(), lr=LR, amsgrad=True)
@@ -172,19 +176,20 @@ else:
     num_episodes = 50
 
 for i_episode in range(num_episodes):
+    print(f"episode #{i_episode}")
     #TODO 6: edit action selection code from lines 175 - 186
-    state, info = env.reset()
+    env.reset()
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     for t in count():
         action = select_action(state)
-        observation, reward, terminated, truncated, _ = env.step(action.item())
+        board_state, reward, done = env.step(action.item())
+        board_state = board_state.flatten('C') #flatten input for model
         reward = torch.tensor([reward], device=device)
-        done = terminated or truncated
-
-        if terminated:
+        
+        if done:
             next_state = None
         else:
-            next_state = torch.tensor(observation, dtype=torch.float32, device=device).unsqueeze(0)
+            next_state = torch.tensor(board_state, dtype=torch.float32, device=device).unsqueeze(0)
 
         # Store the transition in memory
         memory.push(state, action, next_state, reward)
