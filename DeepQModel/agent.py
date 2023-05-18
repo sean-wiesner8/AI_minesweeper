@@ -17,7 +17,6 @@ import network
 NUM_TILES = 22
 NUM_MINES = 99
 
-#TODO 1: initialize env
 env = DQN_Env.DQEnvironment(NUM_MINES, NUM_TILES)
 
 is_ipython = 'inline' in matplotlib.get_backend()
@@ -51,7 +50,7 @@ class ReplayMemory(object):
     
 #Parameters
 BATCH_SIZE = 64
-GAMMA = 0.01
+GAMMA = 0.99
 EPS_START = 0.9
 EPS_END = 0.9
 EPS_DECAY = 1
@@ -62,9 +61,10 @@ DENSE_CHANNELS = 512
 n_actions, n_observations = env.board_size, env.board_size
 env.reset()
 
-#TODO: Choose the right optimizer
-policy_net = network.DQN(n_observations ** 2, n_actions ** 2, DENSE_CHANNELS).to(device)
-target_net = network.DQN(n_observations ** 2, n_actions ** 2, DENSE_CHANNELS).to(device)
+policy_net = network.DQN(n_observations ** 2, n_actions ** 2, n_observations ** 2).to(device)
+target_net = network.DQN(n_observations ** 2, n_actions ** 2, n_observations ** 2).to(device)
+# policy_net = network.DQN2(1, 32, n_observations ** 2).to(device)
+# target_net = network.DQN2(1, 32, n_observations ** 2).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 
 optimizer = optim.AdamW(policy_net.parameters(), lr=LR, amsgrad=True)
@@ -87,7 +87,6 @@ def select_action(state):
             # found, so we pick action with the larger expected reward.
             return policy_net(state).max(1)[1].view(1, 1)
     else:
-        #TODO: modify this so it does the same thing for my model
         rand_list = []
         for r in range(env.board_size):
             for c in range(env.board_size):
@@ -97,7 +96,6 @@ def select_action(state):
 
 episode_durations = []
 
-#TODO 4: revise the plot to be personal to our project
 def plot_durations(show_result=False):
     plt.figure(1)
     durations_t = torch.tensor(episode_durations, dtype=torch.float)
@@ -169,18 +167,19 @@ def optimize_model():
     # In-place gradient clipping
     torch.nn.utils.clip_grad_value_(policy_net.parameters(), 100)
     optimizer.step()
-#TODO 5: potentially change the number of episodes
+
 if torch.cuda.is_available():
-    num_episodes = 6000
+    num_episodes = 600
 else:
     num_episodes = 50
 
 most_opened = 0
 for i_episode in range(num_episodes):
     if i_episode % 50 == 0: print(f"episode {i_episode}")
-    #TODO 6: edit action selection code from lines 175 - 186
+  
     env.reset()
     state = env.board_state.flatten('C')
+    # state = env.board_state
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     for t in count():
         action = select_action(state)
@@ -228,7 +227,7 @@ plot_durations(show_result=True)
 plt.ioff()
 plt.show()
 
-#TODO 7: save model and load it somewhere else
+
 
 
 

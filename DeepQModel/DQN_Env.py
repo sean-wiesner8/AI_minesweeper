@@ -84,7 +84,6 @@ class DQEnvironment(object):
             self.progress += 1
         # no progress condition
         elif old_board_state[action_row][action_col] in self.OPENED:
-            print("no progress :(")
             reward = self.rewards["no_progress"]
         # guess condition
         elif guessed:
