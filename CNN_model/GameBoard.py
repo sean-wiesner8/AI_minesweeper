@@ -1,13 +1,12 @@
 import numpy as np
 
 
+# this minesweeper implementation is inspired by https://github.com/ryanbaldini/MineSweeperNeuralNet/blob/master/MineSweeper.py.
 class GameBoard:
-
 
     """
     GameBoard class represents the game board for the Minesweeper game.
     """
-
 
     def __init__(self, size=22, n_mines=99):
         """
@@ -29,11 +28,10 @@ class GameBoard:
 
         self.board_state = np.empty([self.size, self.size])
         self.board_state[:] = np.nan
-        
+
         self.is_init = False
         self.game_over = False
         self.victory = False
-
 
     def initialize(self, coordinates):
         """
@@ -47,7 +45,6 @@ class GameBoard:
         self.set_up_neighbors()
         self.is_init = True
 
-
     def set_up_mines(self, selected):
         """
         Sets up mines in the game board.
@@ -60,10 +57,10 @@ class GameBoard:
         availableCells = np.setdiff1d(availableCells, offLimits)
         self.n_mines = min(self.n_mines, len(availableCells))
         minesFlattened = np.zeros([self.size**2])
-        minesFlattened[np.random.choice(
-            availableCells, self.n_mines, replace=False)] = 1
+        minesFlattened[
+            np.random.choice(availableCells, self.n_mines, replace=False)
+        ] = 1
         self.mines_grid = minesFlattened.reshape([self.size, self.size])
-
 
     def calculate_offLimits(self, selected):
         """
@@ -72,12 +69,19 @@ class GameBoard:
         Parameters:
         - selected (int): The selected cell.
         """
-        return np.array([
-            selected - self.size - 1, selected - self.size, selected - self.size + 1,
-            selected - 1, selected, selected + 1,
-            selected + self.size - 1, selected + self.size, selected + self.size + 1
-        ])
-
+        return np.array(
+            [
+                selected - self.size - 1,
+                selected - self.size,
+                selected - self.size + 1,
+                selected - 1,
+                selected,
+                selected + 1,
+                selected + self.size - 1,
+                selected + self.size,
+                selected + self.size + 1,
+            ]
+        )
 
     def set_up_neighbors(self):
         """
@@ -87,7 +91,6 @@ class GameBoard:
             for j in range(self.size):
                 self.neighbors_grid[i, j] = self.calculate_neighbors(i, j)
 
-
     def calculate_neighbors(self, i, j):
         """
         Calculates the number of neighbors for a given cell.
@@ -96,15 +99,13 @@ class GameBoard:
         - i (int): The row of the cell.
         - j (int): The column of the cell.
         """
-        nNeighbors = 0
+        n_neighbors = 0
         for k in range(-1, 2):
             if 0 <= i + k < self.size:
                 for l in range(-1, 2):
                     if 0 <= j + l < self.size and (k != 0 or l != 0):
-                        nNeighbors += self.mines_grid[i + k, j + l]
-        return nNeighbors
-
-
+                        n_neighbors += self.mines_grid[i + k, j + l]
+        return n_neighbors
 
     def clearEmptyCell(self, coordinates):
         """
@@ -124,7 +125,6 @@ class GameBoard:
                         if 0 <= y + j < self.size:
                             if np.isnan(self.board_state[x + i, y + j]):
                                 self.clearEmptyCell((x + i, y + j))
-
 
     def select_cell(self, coordinates):
         """
