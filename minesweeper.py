@@ -28,6 +28,8 @@ coordinates = {(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1,
 does not allow a bomb to be initated at (r,c)"""
 
 
+
+
 def init_board(size, mine, r, c):
     board = np.zeros((size, size))
     first_move = r * size + c

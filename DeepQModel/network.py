@@ -8,8 +8,9 @@ class DQN(nn.Module):
         self.layer1 = nn.Linear(batch_size, num_dense)
         self.layer2 = nn.Linear(num_dense, num_dense)
         self.layer3 = nn.Linear(num_dense, num_actions)
+        
 
     def forward(self, x):
         x = F.relu(self.layer1(x))
         x = F.relu(self.layer2(x))
-        return self.layer3(x)
+        return F.softmax(self.layer2(x), 0)

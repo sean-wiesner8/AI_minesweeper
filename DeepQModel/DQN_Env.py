@@ -3,7 +3,7 @@ import sys
 import numpy as np
 
 sys.path.append("..")
-import minesweeper
+import minesweeperEnv
 
 
 class DQEnvironment(object):
@@ -17,9 +17,9 @@ class DQEnvironment(object):
         self.rewards = {
             "win": 1,
             "lose": -0.5,
-            "progress": 0.1,
-            "guess": 0.01,
-            "no_progress": -1e10,
+            "progress": 0.9,
+            "guess": -0.1,
+            "no_progress": -1000,
         }
         self.UNOPENED = -1
         self.FLAGGED = -2
@@ -61,28 +61,30 @@ class DQEnvironment(object):
         done = False
         action_row = action // self.board_size
         action_col = action % self.board_size
-        new_board_state = minesweeper.open_tile(
+        new_board_state = minesweeperEnv.open_tile(
             old_board_state, self.board, action_row, action_col
         )
         self.board_state = new_board_state
         guessed = self.is_guess(action_row, action_col, old_board_state)
 
         # lose condition
-        if self.board[action_row][action_col] == self.MINE:
+        if minesweeperEnv.game_lost(self.board, self.board_state):
             reward = self.rewards["lose"]
             done = True
             self.total += 1
         # win condition
         elif (
-            np.sum(new_board_state in self.OPENED) == self.board_size - self.bomb_count
+            minesweeperEnv.game_won(self.board_state, self.bomb_count)
         ):
             reward = self.rewards["win"]
+            print("game won!!!")
             done = True
             self.wins += 1
             self.total += 1
             self.progress += 1
         # no progress condition
         elif old_board_state[action_row][action_col] in self.OPENED:
+            print("no progress :(")
             reward = self.rewards["no_progress"]
         # guess condition
         elif guessed:
@@ -98,9 +100,9 @@ class DQEnvironment(object):
     def reset(self):
         first_r = random.randint(1, self.board_size - 1)
         first_c = random.randint(1, self.board_size - 1)
-        self.board = minesweeper.init_board(
+        self.board = minesweeperEnv.init_board(
             self.board_size, self.bomb_count, first_r, first_c
         )
-        self.board_state = minesweeper.open_tile(
-            minesweeper.init_board_state(self.board_size), self.board, first_r, first_c
+        self.board_state = minesweeperEnv.open_tile(
+            minesweeperEnv.init_board_state(self.board_size), self.board, first_r, first_c
         )

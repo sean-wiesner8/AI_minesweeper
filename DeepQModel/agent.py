@@ -1,5 +1,3 @@
-import os
-
 from collections import namedtuple, deque
 from itertools import count
 import random
@@ -15,8 +13,6 @@ import torch.nn as nn
 
 import DQN_Env
 import network
-
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 NUM_TILES = 22
 NUM_MINES = 99
@@ -55,10 +51,10 @@ class ReplayMemory(object):
     
 #Parameters
 BATCH_SIZE = 64
-GAMMA = 0.99
+GAMMA = 0.01
 EPS_START = 0.9
-EPS_END = 0.05
-EPS_DECAY = 1000
+EPS_END = 0.9
+EPS_DECAY = 1
 TAU = 0.005
 LR = 1e-4
 DENSE_CHANNELS = 512
@@ -67,8 +63,8 @@ n_actions, n_observations = env.board_size, env.board_size
 env.reset()
 
 #TODO: Choose the right optimizer
-policy_net = network.DQN(n_observations, n_actions, DENSE_CHANNELS).to(device)
-target_net = network.DQN(n_observations, n_actions, DENSE_CHANNELS).to(device)
+policy_net = network.DQN(n_observations ** 2, n_actions ** 2, DENSE_CHANNELS).to(device)
+target_net = network.DQN(n_observations ** 2, n_actions ** 2, DENSE_CHANNELS).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 
 optimizer = optim.AdamW(policy_net.parameters(), lr=LR, amsgrad=True)
@@ -92,7 +88,11 @@ def select_action(state):
             return policy_net(state).max(1)[1].view(1, 1)
     else:
         #TODO: modify this so it does the same thing for my model
-        return torch.tensor([[env.action_space.sample()]], device=device, dtype=torch.long)
+        rand_list = []
+        for r in range(env.board_size):
+            for c in range(env.board_size):
+                if env.board_state[r][c] == -1: rand_list.append(r * env.board_size + c)
+        return torch.tensor([[random.choice(rand_list)]], device=device, dtype=torch.long)
 
 
 episode_durations = []
@@ -171,15 +171,16 @@ def optimize_model():
     optimizer.step()
 #TODO 5: potentially change the number of episodes
 if torch.cuda.is_available():
-    num_episodes = 600
+    num_episodes = 6000
 else:
     num_episodes = 50
 
+most_opened = 0
 for i_episode in range(num_episodes):
-    print(f"episode #{i_episode}")
+    if i_episode % 50 == 0: print(f"episode {i_episode}")
     #TODO 6: edit action selection code from lines 175 - 186
     env.reset()
-    state = env.board_state
+    state = env.board_state.flatten('C')
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     for t in count():
         action = select_action(state)
@@ -210,6 +211,14 @@ for i_episode in range(num_episodes):
         target_net.load_state_dict(target_net_state_dict)
 
         if done:
+            opened = 0
+            for r in range(env.board_size):
+                for c in range(env.board_size):
+                    if env.board_state[r][c] in range(0, 9):
+                        opened += 1
+            if opened > most_opened:
+                most_opened = opened
+                print(f"the new highest count is {most_opened}")
             episode_durations.append(t + 1)
             plot_durations()
             break
