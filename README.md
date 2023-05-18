@@ -7,14 +7,14 @@ Link to paper: https://docs.google.com/document/d/18SRsW-SpH7Gs73xyqAHALdgLe8Q-q
 This README.md serves as a guide for how to run our code. 
 
 Please run the following commands:
-pip install sympy
-pip install numpy
-pip install matplotlib
-pip install contextlib
-pip install unittest
-pip install gymnasium
-pip install torch
-pip install torchvision
+pip install sympy <br>
+pip install numpy <br>
+pip install matplotlib <br>
+pip install contextlib <br>
+pip install unittest <br>
+pip install gymnasium <br>
+pip install torch <br>
+pip install torchvision <br>
 
 To "build" a variation of the probabilistic model, `run minesweeper.py` and follow the instructions provided by the terminal.
 We suggest running the following parameters for board size (n x n) and mine count (m) based on the following difficulties:
