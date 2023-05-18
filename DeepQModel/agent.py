@@ -52,7 +52,7 @@ class ReplayMemory(object):
 BATCH_SIZE = 64
 GAMMA = 0.99
 EPS_START = 0.9
-EPS_END = 0.9
+EPS_END = 0.05
 EPS_DECAY = 1
 TAU = 0.005
 LR = 1e-4
@@ -171,7 +171,7 @@ def optimize_model():
 if torch.cuda.is_available():
     num_episodes = 600
 else:
-    num_episodes = 50
+    num_episodes = 600
 
 most_opened = 0
 for i_episode in range(num_episodes):
