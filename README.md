@@ -6,7 +6,7 @@ Link to paper: https://docs.google.com/document/d/18SRsW-SpH7Gs73xyqAHALdgLe8Q-q
 
 This README.md serves as a guide for how to run our code. 
 
-Please run the following commands:
+Please run the following commands: <br>
 pip install sympy <br>
 pip install numpy <br>
 pip install matplotlib <br>
