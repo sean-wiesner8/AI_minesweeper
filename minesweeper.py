@@ -3,6 +3,8 @@ import numpy as np
 import heuristic_model
 import time
 import sys
+import io
+import contextlib
 
 # Raise recursion limit to avoid RecursionError on bigger boards
 sys.setrecursionlimit(2**16)
@@ -142,7 +144,9 @@ def print_board(board, board_state):
 """game loop for minesweeper game mode."""
 
 
-def printed_game_loop(mode, bomb_count, board_size):
+def printed_game_loop(
+    mode, bomb_count, board_size, certain_move_model, uncertain_move_strat
+):
     board = np.zeros((board_size, board_size))
     board_state = init_board_state(board_size)
     move_count = 0
@@ -165,7 +169,11 @@ def printed_game_loop(mode, bomb_count, board_size):
                     continue
         else:
             opp, r, c = heuristic_model.ai_heuristic_logic(
-                board_state, first_move, bomb_count
+                board_state,
+                first_move,
+                bomb_count,
+                certain_move_model,
+                uncertain_move_strat,
             )
         if opp == "open":
             if first_move:
@@ -180,10 +188,10 @@ def printed_game_loop(mode, bomb_count, board_size):
         print_board(board, board_state)
     if game_lost(board, board_state):
         print("you lost")
-        return False
+        return False, move_count
     else:
         print("you won")
-        return True
+        return True, move_count
 
 
 """output the number of wins for a given number of trials"""
@@ -193,12 +201,21 @@ def trials():
     board_size = int(input("Enter board size: "))
     bomb_count = int(input("Enter bomb count: "))
     iterations = int(input("input number of trial iteration: "))
+    certain_move_model = int(
+        input("input certain move model: SP_Solver(0), CSP_Solver(1)")
+    )
+    uncertain_move_strat = int(
+        input("input uncertain move strategy: random(0), local probability(1)")
+    )
     count = iterations
 
     start_time = time.time()
     win = 0
     while iterations > 0:
-        if printed_game_loop("ai", bomb_count, board_size):
+        is_win, _ = printed_game_loop(
+            "ai", bomb_count, board_size, certain_move_model, uncertain_move_strat
+        )
+        if is_win:
             win += 1
         iterations -= 1
     end_time = time.time()
@@ -206,6 +223,33 @@ def trials():
     print("Wins: " + str(win))
     print("Sucess Rate: " + str(win / count))
     print("elapsed time: " + str(end_time - start_time))
+
+
+def generate_data(
+    board_size, bomb_count, certain_move_model, uncertain_move_strat, iterations
+):
+    wins_arr = []
+    times_arr = []
+    move_count_arr = []
+    start_time = time.time()
+    while iterations > 0:
+        with contextlib.redirect_stdout(io.StringIO()):
+            is_win, move_count = printed_game_loop(
+                "ai", bomb_count, board_size, certain_move_model, uncertain_move_strat
+            )
+        if is_win:
+            wins_arr.append(1)
+        else:
+            wins_arr.append(0)
+        times_arr.append(time.time() - start_time)
+        move_count_arr.append(move_count)
+        iterations -= 1
+
+    data = np.array(
+        list(zip(wins_arr, times_arr, move_count_arr)),
+        dtype=[("wins", "i4"), ("times", "f8"), ("move_counts", "i4")],
+    )
+    return data
 
 
 def main():
