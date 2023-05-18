@@ -378,41 +378,5 @@ class TestCountSurroundingBombsCorner(unittest.TestCase):
             actual_val, expected_val, f"expected {expected_val} but got {actual_val}"
         )
 
-
-"""
-class SampleGame(unittest.TestCase):
-    def small_game(self):
-        board = init_test_board(3, [(2, 1), (2, 2)])
-        board_state = init_test_board_state(3, [], [], board)
-        board_state = minesweeper.open_tile(board_state, board, 0, 1)
-        board_rep = Matrix(board_rep)
-        board_rep.rref()
-        actual_val = heuristic_model.analyze_matrix(board_rep, board_state)
-        expected_val = deque()
-        expected_val.append("flag", 2, 1)
-        while actual_val and expected_val:
-            self.assertEqual(
-                actual_val.popleft(),
-                expected_val.popleft(),
-                f"expected {expected_val} but got {actual_val}",
-            )
-        actual_val = heuristic_model.analyze_matrix(board_rep, board_state)
-        expected_val.append("flag", 2, 2)
-        while actual_val and expected_val:
-            self.assertEqual(
-                actual_val.popleft(),
-                expected_val.popleft(),
-                f"expected {expected_val} but got {actual_val}",
-            )
-        actual_val = heuristic_model.analyze_matrix(board_rep, board_state)
-        expected_val.append("open", 2, 0)
-        while actual_val and expected_val:
-            self.assertEqual(
-                actual_val.popleft(),
-                expected_val.popleft(),
-                f"expected {expected_val} but got {actual_val}",
-            )
-"""
-
 if __name__ == "__main__":
     unittest.main()
