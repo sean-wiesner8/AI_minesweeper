@@ -231,29 +231,29 @@ plot_durations(show_result=True)
 plt.ioff()
 plt.show()
 
-env.reset()
-opened_list = []
-num_data = 1
-for iter in range(num_data):
-    env.reset()
-    done = False
-    while not done:
-        input_val = env.board_state.flatten('C')
-        state = torch.tensor(input_val, dtype=torch.float32, device=device).unsqueeze(0)
-        action = policy_net(state).max(1)[1].view(1, 1)
-        board_state, reward, done = env.step(action.item())
-        action_row = action // env.board_size
-        action_col = action % env.board_size
-        if env.board[action_row][action_col] == 1:
-            opened = 0
-            for r in range(env.board_size):
-                for c in range(env.board_size):
-                    if env.board_state[r][c] in range(0, 9):
-                        opened += 1
-            opened_list.append(opened)
-            done = True
+# env.reset()
+# opened_list = []
+# num_data = 1
+# for iter in range(num_data):
+#     env.reset()
+#     done = False
+#     while not done:
+#         input_val = env.board_state.flatten('C')
+#         state = torch.tensor(input_val, dtype=torch.float32, device=device).unsqueeze(0)
+#         action = policy_net(state).max(1)[1].view(1, 1)
+#         board_state, reward, done = env.step(action.item())
+#         action_row = action // env.board_size
+#         action_col = action % env.board_size
+#         if env.board[action_row][action_col] == 1:
+#             opened = 0
+#             for r in range(env.board_size):
+#                 for c in range(env.board_size):
+#                     if env.board_state[r][c] in range(0, 9):
+#                         opened += 1
+#             opened_list.append(opened)
+#             done = True
             
-print('average number of mines opened', sum(opened_list) / num_data)
+# print('average number of mines opened', sum(opened_list) / num_data)
             
         
 

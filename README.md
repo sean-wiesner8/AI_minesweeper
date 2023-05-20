@@ -23,4 +23,4 @@ Intermediate: n = 16, m = 40
 Expert: n = 22, m = 99
 Then specify if you want to use the Single-Point or Constraint Satisfaction alogirthm to run, and then specify if you want a random tile to open the tile with the lowest local probability given the need to make an uncertain move.  
 
-To train a DQN: `run agent.py` in the DeepQModel directory. You can select the game board size by modifying the NUM_TILES variable on line 17, and you can select the number of mines by modifying the NUM_MINES variable on line 18.
+To train a DQN: `run agent.py` in the `DeepQModel` directory. You can select the game board size by modifying the NUM_TILES variable on line 17, and you can select the number of mines by modifying the NUM_MINES variable on line 18. If you would like to save the model, change the name of the model on line 228 and run the code. Your model will be saved in the `trained_model` directory.
