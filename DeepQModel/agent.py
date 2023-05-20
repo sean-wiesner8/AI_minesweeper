@@ -1,11 +1,11 @@
 from collections import namedtuple, deque
 from itertools import count
 import random
+import time
 import gymnasium as gym
 import matplotlib
 import matplotlib.pyplot as plt
 import math
-
 
 import torch
 import torch.optim as optim
@@ -16,6 +16,7 @@ import network
 
 NUM_TILES = 22
 NUM_MINES = 99
+start_time = time.time()
 
 env = DQN_Env.DQEnvironment(NUM_MINES, NUM_TILES)
 
@@ -52,8 +53,8 @@ class ReplayMemory(object):
 BATCH_SIZE = 64
 GAMMA = 0.99
 EPS_START = 0.9
-EPS_END = 0.9
-EPS_DECAY = 1
+EPS_END = 1e-10
+EPS_DECAY = 10000
 TAU = 0.005
 LR = 1e-4
 DENSE_CHANNELS = 512
@@ -169,9 +170,9 @@ def optimize_model():
     optimizer.step()
 
 if torch.cuda.is_available():
-    num_episodes = 600
+    num_episodes = 20
 else:
-    num_episodes = 50
+    num_episodes = 20
 
 most_opened = 0
 for i_episode in range(num_episodes):
@@ -222,11 +223,39 @@ for i_episode in range(num_episodes):
             episode_durations.append(t + 1)
             plot_durations()
             break
-
+end_time = time.time()
+print('Time took to train: ', end_time - start_time, ' seconds')
+torch.save(policy_net, 'trained_model/model2.pt')
 print('Complete')
 plot_durations(show_result=True)
 plt.ioff()
 plt.show()
+
+env.reset()
+opened_list = []
+num_data = 1
+for iter in range(num_data):
+    env.reset()
+    done = False
+    while not done:
+        input_val = env.board_state.flatten('C')
+        state = torch.tensor(input_val, dtype=torch.float32, device=device).unsqueeze(0)
+        action = policy_net(state).max(1)[1].view(1, 1)
+        board_state, reward, done = env.step(action.item())
+        action_row = action // env.board_size
+        action_col = action % env.board_size
+        if env.board[action_row][action_col] == 1:
+            opened = 0
+            for r in range(env.board_size):
+                for c in range(env.board_size):
+                    if env.board_state[r][c] in range(0, 9):
+                        opened += 1
+            opened_list.append(opened)
+            done = True
+            
+print('average number of mines opened', sum(opened_list) / num_data)
+            
+        
 
 
 
