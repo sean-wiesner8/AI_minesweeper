@@ -215,6 +215,7 @@ for i_episode in range(num_episodes):
                 for c in range(env.board_size):
                     if env.board_state[r][c] in range(0, 9):
                         opened += 1
+            print(opened)
             if opened > most_opened:
                 most_opened = opened
                 print(f"the new highest count is {most_opened}")
