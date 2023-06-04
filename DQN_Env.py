@@ -2,8 +2,9 @@ import random
 import sys
 import numpy as np
 
-sys.path.append("..")
-import minesweeperEnv
+import minesweeper
+# Raise recursion limit to avoid RecursionError on bigger boards
+sys.setrecursionlimit(2**16)
 
 
 class DQEnvironment(object):
@@ -61,20 +62,20 @@ class DQEnvironment(object):
         done = False
         action_row = action // self.board_size
         action_col = action % self.board_size
-        new_board_state = minesweeperEnv.open_tile(
+        new_board_state = minesweeper.open_tile(
             old_board_state, self.board, action_row, action_col
         )
         self.board_state = new_board_state
         guessed = self.is_guess(action_row, action_col, old_board_state)
 
         # lose condition
-        if minesweeperEnv.game_lost(self.board, self.board_state):
+        if minesweeper.game_lost(self.board, self.board_state):
             reward = self.rewards["lose"]
             done = True
             self.total += 1
         # win condition
         elif (
-            minesweeperEnv.game_won(self.board_state, self.bomb_count)
+            minesweeper.game_won(self.board_state, self.bomb_count)
         ):
             reward = self.rewards["win"]
             print("game won!!!")
@@ -99,9 +100,9 @@ class DQEnvironment(object):
     def reset(self):
         first_r = random.randint(1, self.board_size - 1)
         first_c = random.randint(1, self.board_size - 1)
-        self.board = minesweeperEnv.init_board(
+        self.board = minesweeper.init_board(
             self.board_size, self.bomb_count, first_r, first_c
         )
-        self.board_state = minesweeperEnv.open_tile(
-            minesweeperEnv.init_board_state(self.board_size), self.board, first_r, first_c
+        self.board_state = minesweeper.open_tile(
+            minesweeper.init_board_state(self.board_size), self.board, first_r, first_c
         )

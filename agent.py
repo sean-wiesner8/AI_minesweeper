@@ -145,9 +145,9 @@ def optimize_model():
     optimizer.step()
 
 if torch.cuda.is_available():
-    num_episodes = 20
+    num_episodes = 200
 else:
-    num_episodes = 20
+    num_episodes = 200
 
 most_opened = 0
 for i_episode in range(num_episodes):
