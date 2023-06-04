@@ -12,7 +12,6 @@ pip install numpy <br>
 pip install matplotlib <br>
 pip install contextlib <br>
 pip install unittest <br>
-pip install gymnasium <br>
 pip install torch <br>
 pip install torchvision <br>
 
